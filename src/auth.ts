@@ -35,23 +35,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    async signIn({ account, profile }) {
-      console.log("profile", profile);
-      if (account?.provider === "credentials") return true;
-      if (!profile) throw new Error("Profile is undefined");
-      const user = await db.user.findFirst({
-        where: { email: profile.email as string },
-      });
-      if (user) return true;
-      await db.user.create({
-        data: {
-          email: profile.email as string,
-          username: profile.email as string,
-          name: profile.name as string,
-          emailVerified: profile.email_verified as boolean
-        },
-      });
-      return true;
+    async signIn({ account, profile, user }) {
+      try {
+        if (account?.provider === "credentials") {
+          return `/signup`;
+        }
+        if (!profile) throw new Error("Profile is undefined");
+        const User = await db.user.findFirst({
+          where: { email: profile.email as string },
+        });
+        if (User) return true;
+        await db.user.create({
+          data: {
+            email: profile.email as string,
+            username: profile.email as string,
+            name: profile.name as string,
+            emailVerified: profile.email_verified as boolean
+          },
+        });
+        return true;
+      } catch (error: any) {
+        throw new Error(`Error Signing In : ${error.message}`);
+        // return false;
+      }
     },
     async jwt({ token, user }) {
       if (!user) return token;

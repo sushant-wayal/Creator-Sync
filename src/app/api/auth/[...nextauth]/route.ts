@@ -1,3 +1,3 @@
-import { handlers } from "./options"
+import { handlers } from "../../../../auth"
 
 export const { GET, POST } = handlers

@@ -1,1 +1,1 @@
-export { auth as middleware } from "../src/app/api/auth/[...nextauth]/options"
+export { auth as middleware } from "./auth"

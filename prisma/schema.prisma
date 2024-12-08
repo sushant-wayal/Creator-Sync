@@ -18,12 +18,20 @@ enum UserRole {
   EDITOR
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
 model User {
   id            String   @id @default(cuid())
   name          String
   username      String   @unique
   email         String   @unique
   emailVerified Boolean  @default(false)
+  dob           DateTime
+  gender        Gender
   password      String?
   role          UserRole @default(CREATOR)
 }

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { auth } from "./api/auth/[...nextauth]/options";
+import { NavBar } from "@/Components/MyComponents/NavBar";
+import { Footer } from "@/Components/MyComponents/Footer";
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Creator Sync",
@@ -12,12 +15,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
   return (
     <html lang="en">
-      <body>
-        {session ? session.user.email : "No session"}
-        {children}
+      <body
+        className="bg-[#222222]"
+      >
+        <Toaster
+          richColors={true}
+          theme="light"
+          position="top-center"
+        />
+        <SessionProvider>
+          <NavBar />
+          {children}
+          {/* <Footer /> */}
+        </SessionProvider>
       </body>
     </html>
   );
