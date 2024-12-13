@@ -1,30 +1,14 @@
+import { websiteName } from "@/constants";
 import Link from "next/link";
 
-interface FooterProps {
-  className?: string;
-}
-
-export const Footer : React.FC<FooterProps> = ({ className }) => {
+export const Footer = () => {
   return (
-    <footer
-      className={`w-full flex justify-between items-center p-2 bg-[#333333] text-white ${className}`}
-    >
-      <p
-        className="text-center"
-      >© 2024 Creator Sync</p>
-      <ul
-        className="flex justify-center gap-10"
-      >
-        <li>
-          <Link href="/privacy">Privacy Policy</Link>
-        </li>
-        <li>
-          <Link href="/terms">Terms of Service</Link>
-        </li>
-        <li>
-          <Link href="/contact">Contact Us</Link>
-        </li>
-      </ul>
+    <footer className="w-full h-10 py-3 flex justify-between px-10 items-center bg-white text-gray-600 text-sm">
+      <p className="text-center">© 2021 {websiteName}. All rights reserved.</p>
+      <div className="flex gap-4 justify-center items-center">
+        <Link href="/termsandcondition" className="hover:underline">Terms and Condition</Link>
+        <Link href="/privacy" className="hover:underline">Privacy</Link>
+      </div>
     </footer>
   );
 }

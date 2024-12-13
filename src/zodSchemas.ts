@@ -29,3 +29,33 @@ export const SignUpFormSchema = z.object({
     message: "Invalid Gender"
   })
 })
+
+export const EmailFormSchema = z.object({
+  email: z.string().min(1, {
+    message: "Email is Required"
+  }).email({
+    message: "Invalid Email"
+  })
+})
+
+export const ResetPasswordFormSchema = z.object({
+  email: z.string().min(1, {
+    message: "Email is Required"
+  }).email({
+    message: "Invalid Email"
+  }),
+  password: z.string().min(1, {
+    message: "Password is Required"
+  }),
+  confirmPassword: z.string().min(1, {
+    message: "Confirm Password is Required"
+    })
+}).superRefine((data, ctx) => {
+  if (data.password !== data.confirmPassword) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Passwords do not match",
+      path: ["confirmPassword"],
+    });
+  }
+})

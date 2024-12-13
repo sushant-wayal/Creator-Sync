@@ -25,13 +25,18 @@ enum Gender {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  name          String
-  username      String   @unique
-  email         String   @unique
-  emailVerified Boolean  @default(false)
-  dob           DateTime
-  gender        Gender
-  password      String?
-  role          UserRole @default(CREATOR)
+  id                            String   @id @default(cuid())
+  name                          String
+  username                      String   @unique
+  profilePicture                String?
+  email                         String   @unique
+  emailVerified                 Boolean  @default(false)
+  emailVerificationToken        String?
+  emailVerificationTokenExpires DateTime?
+  passwordResetToken            String?
+  passwordResetTokenExpires     DateTime?
+  dob                           DateTime?
+  gender                        Gender?
+  password                      String?
+  role                          UserRole @default(CREATOR)
 }

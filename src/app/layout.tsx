@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { NavBar } from "@/Components/MyComponents/NavBar";
-import { Footer } from "@/Components/MyComponents/Footer";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
+import { Background } from "@/Components/MyComponents/Background";
 
 export const metadata: Metadata = {
   title: "Creator Sync",
@@ -17,18 +16,15 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className="bg-[#222222]"
-      >
+      <body>
         <Toaster
           richColors={true}
           theme="light"
           position="top-center"
         />
         <SessionProvider>
-          <NavBar />
+          <Background />
           {children}
-          {/* <Footer /> */}
         </SessionProvider>
       </body>
     </html>

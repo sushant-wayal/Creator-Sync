@@ -1,44 +1,25 @@
-"use client";
+import Link from "next/link"
+import { Logo } from "./Logo"
+import { websiteName } from "@/constants"
 
-import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
-
-interface NavBarProps {
-  className?: string;
+interface NavbarProps {
+  links: { name: string, url: string }[]
 }
 
-export const NavBar : React.FC<NavBarProps> = ({ className }) => {
-  const session = useSession();
+export const Navbar : React.FC<NavbarProps> = ({ links }) => {
   return (
-    <nav
-      className={`fixed z-10 top-0 left-0 w-full flex justify-between items-center p-2 bg-[#333333] text-white ${className}`}
-    >
-      <h1
-        className="text-2xl"
-      >Creator Sync</h1>
-      <ul
-        className="flex gap-10"
-      >
-        <li>
-          <Link href="/">Home</Link>
-        </li>
-        {session.status == "authenticated" ? (
-          <>
-            <li>
-              <button onClick={() => signOut()}>Sign Out</button>
-            </li>
-          </>
-        ) : (
-          <>
-            <li>
-              <Link href="/signin">Sign In</Link>
-            </li>
-            <li>
-              <Link href="/signup">Sign Up</Link>
-            </li>
-          </>
-        )}
-      </ul>
+    <nav className="w-full h-16 flex px-3 py-2 justify-between items-center bg-white text0black">
+      <Link href="/" className="flex justify-center items-center gap-2">
+        <Logo size={24} />
+        <h1 className="font-bold text-2xl">{websiteName}</h1>
+      </Link>
+      <div className="flex gap-8 justify-center items-center">
+        {links.map(({ name, url }) => (
+          <Link key={name} href={url} className="font-semibold hover:underline">
+            {name}
+          </Link>
+        ))}
+      </div>
     </nav>
-  );
-};
+  )
+}

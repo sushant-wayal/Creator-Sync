@@ -1,10 +1,9 @@
 import { Footer } from "@/Components/MyComponents/Footer";
-import { SignInForm } from "@/Components/MyComponents/Forms/SigninForm";
+import { VerificationForm } from "@/Components/MyComponents/Forms/VerificationForm";
 import { Navbar } from "@/Components/MyComponents/Navbar";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/Components/ui/card";
-import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/Components/ui/card";
 
-const singinPage = () => {
+const verificationPage = () => {
   return (
     <div className="w-lvw h-lvh flex flex-col justify-between items-center">
       <Navbar
@@ -16,21 +15,16 @@ const singinPage = () => {
       />
       <Card className="h-auto mx-auto bg-white border-0 text-black">
         <CardHeader>
-          <CardTitle className="text-4xl">Welcom Back!</CardTitle>
+          <CardTitle className="text-4xl">Email Verification</CardTitle>
           <CardDescription className="text-sm">Enter your credentials to access your account</CardDescription>
         </CardHeader>
         <CardContent>
-          <SignInForm/>
+          <VerificationForm />
         </CardContent>
-        <CardFooter className="flex justify-center items-center">
-          <p className="text-center text-sm italic">
-            Don't have an account? <Link href="/signup" className="not-italic underline">Sign Up</Link>
-          </p>
-        </CardFooter>
       </Card>
       <Footer />
-    </div>    
+    </div>
   );
 }
 
-export default singinPage;
+export default verificationPage;
