@@ -3,6 +3,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
 import { Background } from "@/Components/MyComponents/Background";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 
 export const metadata: Metadata = {
   title: "Creator Sync",
@@ -23,8 +24,10 @@ export default async function RootLayout({
           position="top-center"
         />
         <SessionProvider>
-          <Background />
-          {children}
+          <EdgeStoreProvider>
+            <Background />
+            {children}
+          </EdgeStoreProvider>
         </SessionProvider>
       </body>
     </html>

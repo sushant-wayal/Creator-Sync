@@ -3,8 +3,8 @@ import Credentials from "next-auth/providers/credentials"
 import { compare, hash } from "bcryptjs"
 import { db } from "@/lib/db"
 import Google from "next-auth/providers/google"
-import { sendEmail } from "./helper/mailer"
-import { FORGOT_PASSWORD_EMAIL, PASSWORD_NOT_SET, VERIFICATION_EMAIL } from "./constants"
+import { domain, FORGOT_PASSWORD_EMAIL, PASSWORD_NOT_SET, VERIFICATION_EMAIL } from "./constants"
+import axios from "axios"
  
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -17,9 +17,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         username: {},
         email: {},
         dob: {},
-        gender: {}
+        gender: {},
+        profilePicture: {},
       },
-      authorize: async ({ usernameOrEmail, password, newUser, name, username, email, dob, gender }) => {
+      authorize: async ({ usernameOrEmail, password, newUser, name, username, email, dob, gender, profilePicture }) => {
         console.log("credentials")
         console.log("usernameOrEmail", usernameOrEmail);
         console.log("password", password);
@@ -29,6 +30,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         console.log("email", email);
         console.log("dob", dob);
         console.log("gender", gender);
+        console.log("profilePicture", profilePicture);
         if (newUser == "true") {
           console.log("new User", newUser);
           const hashedPassword = await hash(password as string, 10);
@@ -40,9 +42,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               dob: new Date(dob as string),
               gender: gender as "MALE" || "FEMALE" || "OTHER",
               password: hashedPassword,
+              profilePicture: profilePicture as string,
             },
           });
-          await sendEmail(user.email, VERIFICATION_EMAIL);
+          console.log("User Created", user);
+          console.log("Sending Email");
+          await axios.post(`${domain}/api/send-email`, { email: user.email, emailType: VERIFICATION_EMAIL });
+          console.log("Email Sent");
           return user;
         }
         const user = await db.user.findFirst({
@@ -55,7 +61,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
         if (!user) throw new Error("No user found");
         if (!user.password) {
-          if (user && user.email) await sendEmail(user.email, FORGOT_PASSWORD_EMAIL);
+          await axios.post(`${domain}/api/send-email`, { email: user.email, emailType: FORGOT_PASSWORD_EMAIL });
           throw new Error(PASSWORD_NOT_SET);
         }
         const passwordMatch = await compare(password as string, user.password as string);
@@ -91,7 +97,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           },
         });
         if (profile.email) {
-          await sendEmail(profile.email, VERIFICATION_EMAIL);
+          console.log("Sending Email");
+          await axios.post(`${domain}/api/send-email`, { email: profile.email, emailType: VERIFICATION_EMAIL });
         } else {
           throw new Error("Email is undefined");
         }

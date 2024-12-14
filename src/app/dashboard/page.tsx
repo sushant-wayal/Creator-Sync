@@ -1,4 +1,6 @@
-const dashboardPage = () => {
+"use client";
+
+const DashboardPage = () => {
   return (
     <div>
       <h1>Dashboard</h1>
@@ -6,4 +8,4 @@ const dashboardPage = () => {
   );
 };
 
-export default dashboardPage;
+export default DashboardPage;
