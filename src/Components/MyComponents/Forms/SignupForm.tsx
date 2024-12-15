@@ -18,6 +18,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEdgeStore } from "@/lib/edgestore";
 import { SingleImageDropzone } from "@/Components/ui/single-image-dropzone";
+import { Progress } from "@/Components/ui/progress";
 
 export const SignupForm = () => {
   const router = useRouter();
@@ -105,13 +106,7 @@ export const SignupForm = () => {
           {file && (
             uploadProgress < 100 ? (
             <div className="flex items-center gap-2 w-1/3">
-              <div className="w-full h-2 border-2 border-[#444444] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[#222222] transition-all duration-200"
-                  style={{ width: `${uploadProgress}%` }}
-                >
-                </div>
-              </div>
+              <Progress value={uploadProgress} className="w-full h-2" />
               <span>
                 {Math.round(uploadProgress)}%
               </span>
