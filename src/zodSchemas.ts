@@ -59,3 +59,15 @@ export const ResetPasswordFormSchema = z.object({
     });
   }
 })
+
+export const NewProjectFormSchema = z.object({
+  title: z.string().min(1, {
+    message: "Title is Required"
+  }),
+  description: z.string().min(1, {
+    message: "Description is Required"
+  }),
+  projectType: z.enum(["VLOG", "SHORT_FILM", "COMMERCIAL", "MUSIC_VIDEO", "DOCUMENTARY"], {
+    message: "Invalid Project Type"
+  })
+})

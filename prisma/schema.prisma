@@ -13,9 +13,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  CREATOR
-  EDITOR
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  amount      Float
+  currency    String
+  status      PaymentStatus @default(PENDING)
+  user        User          @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 enum Gender {
@@ -25,12 +37,12 @@ enum Gender {
 }
 
 model User {
-  id                            String   @id @default(cuid())
+  id                            String         @id @default(cuid())
   name                          String
-  username                      String   @unique
+  username                      String         @unique
   profilePicture                String?
-  email                         String   @unique
-  emailVerified                 Boolean  @default(false)
+  email                         String         @unique
+  emailVerified                 Boolean        @default(false)
   emailVerificationToken        String?
   emailVerificationTokenExpires DateTime?
   passwordResetToken            String?
@@ -38,5 +50,103 @@ model User {
   dob                           DateTime?
   gender                        Gender?
   password                      String?
-  role                          UserRole @default(CREATOR)
+  readyToEdit                   Boolean        @default(false)
+  rating                        Float          @default(0)
+  createdProjects               Project[]      @relation("CreatorRelation")
+  editedProjects                Project[]      @relation("EditorRelation")
+  payments                      Payment[]
+  notificationsfrom             Notification[] @relation("NotificationFromRelation")
+  notificationsto               Notification[] @relation("NotificationToRelation")
+  createdAt                     DateTime       @default(now())
+  updatedAt                     DateTime       @updatedAt
+}
+
+model FileVersion {
+  id        String   @id @default(cuid())
+  version   Int
+  url       String
+  projectId String
+  project   Project  @relation("FileVersionRelation", fields: [projectId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum InstructionNature {
+  COMPULSORY
+  OPTIONAL
+}
+
+enum InstructionStatus {
+  PENDING
+  COMPLETED
+}
+
+model Instructions {
+  id          String            @id @default(cuid())
+  content     String
+  projectId   String
+  project     Project           @relation("InstructionsRelation", fields: [projectId], references: [id])
+  nature      InstructionNature @default(COMPULSORY)
+  status      InstructionStatus @default(PENDING)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+enum ProjectType {
+  VLOG
+  SHORT_FILM
+  COMMERCIAL
+  MUSIC_VIDEO
+  DOCUMENTARY
+}
+
+model Project {
+  id           String         @id @default(cuid())
+  title        String
+  description  String
+  type         ProjectType
+  creator      User           @relation("CreatorRelation", fields: [creatorId], references: [id])
+  creatorId    String
+  editor       User?           @relation("EditorRelation", fields: [editorId], references: [id])
+  editorId     String?
+  FileVersion  FileVersion[]  @relation("FileVersionRelation")
+  Instructions Instructions[] @relation("InstructionsRelation")
+  Chat         Chat[]         
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  message     String
+  fromUserId  String
+  from        User     @relation("NotificationFromRelation", fields: [fromUserId], references: [id])
+  toUserId    String
+  to          User     @relation("NotificationToRelation", fields: [toUserId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum MessageFrom {
+  CREATOR
+  EDITOR
+}
+
+model Message {
+  id        String       @id @default(cuid())
+  content   String
+  chatId    String
+  chat      Chat         @relation(fields: [chatId], references: [id])
+  from      MessageFrom
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Chat {
+  id        String    @id @default(cuid())
+  messages  Message[]
+  project   Project   @relation(fields: [projectId], references: [id])
+  projectId String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
