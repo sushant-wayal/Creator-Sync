@@ -107,8 +107,10 @@ model Project {
   type         ProjectType
   creator      User           @relation("CreatorRelation", fields: [creatorId], references: [id])
   creatorId    String
-  editor       User?           @relation("EditorRelation", fields: [editorId], references: [id])
+  editor       User?          @relation("EditorRelation", fields: [editorId], references: [id])
   editorId     String?
+  duration     Int
+  deadline     DateTime
   FileVersion  FileVersion[]  @relation("FileVersionRelation")
   Instructions Instructions[] @relation("InstructionsRelation")
   Chat         Chat[]         

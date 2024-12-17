@@ -16,11 +16,15 @@ import {useForm } from "react-hook-form";
 import { z } from "zod";
 import { ProfilePicture } from "../ProfilePicture";
 import { Badge } from "@/Components/ui/badge";
-import { Plus, Search, X } from "lucide-react";
+import { CalendarIcon, Plus, Search, X } from "lucide-react";
 import { Switch } from "@/Components/ui/switch";
 import { Label } from "@/Components/ui/label";
 import { toast } from "sonner";
 import { createProject } from "@/actions/project";
+import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "@/Components/ui/calendar";
 
 interface NewProjectFormProps {
   initialEditors: Editor[];
@@ -73,13 +77,15 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
   const onSubmit = async (values: z.infer<typeof NewProjectFormSchema>) => {
     toast.loading("Creating Project...");
     try {
-      const { title, description, projectType } = values;
+      const { title, description, projectType, duration, deadline } = values;
       await createProject({
         title,
         description,
         type: projectType,
         editorId: selectedEditorId,
         fileUrl,
+        duration,
+        deadline,
         instructions: instructions.map(({ content, nature }) => ({ content, nature }))
       })
       toast.success("Project Created Successfully");
@@ -208,6 +214,69 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
                       </SelectContent>
                     </Select>
                   </FormControl>
+                  <FormMessage/>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="duration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Duration
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter Project Duration"
+                      {...field}
+                      className="placeholder:text-[#444444]"
+                    />
+                  </FormControl>
+                  <FormMessage/>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="deadline"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2 w-full">
+                  <FormLabel>
+                    Deadline
+                  </FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            "Pick a date"
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage/>
                 </FormItem>
               )}

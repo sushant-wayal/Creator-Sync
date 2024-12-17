@@ -69,5 +69,11 @@ export const NewProjectFormSchema = z.object({
   }),
   projectType: z.enum(["VLOG", "SHORT_FILM", "COMMERCIAL", "MUSIC_VIDEO", "DOCUMENTARY"], {
     message: "Invalid Project Type"
-  })
+  }),
+  duration: z.number().int().min(1, {
+    message: "Duration is Required"
+  }),
+  deadline: z.date({
+    message: "Invalid Deadline"
+  }),
 })
