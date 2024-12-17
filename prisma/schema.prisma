@@ -64,6 +64,7 @@ model User {
 model FileVersion {
   id        String   @id @default(cuid())
   version   Int
+  name      String
   url       String
   projectId String
   project   Project  @relation("FileVersionRelation", fields: [projectId], references: [id])
@@ -111,6 +112,7 @@ model Project {
   editorId     String?
   duration     Int
   deadline     DateTime
+  completed    Boolean        @default(false)
   FileVersion  FileVersion[]  @relation("FileVersionRelation")
   Instructions Instructions[] @relation("InstructionsRelation")
   Chat         Chat[]         

@@ -2,9 +2,9 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/Components/ui/card";
 import Link from "next/link";
-import { Footer } from "@/Components/MyComponents/Footer";
+import { Footer } from "@/Components/MyComponents/General/Footer";
 import { SignupForm } from "@/Components/MyComponents/Forms/SignupForm";
-import { Navbar } from "@/Components/MyComponents/Navbar";
+import { Navbar } from "@/Components/MyComponents/General/Navbar";
 
 const singupPage = () => {
   return (
@@ -14,6 +14,8 @@ const singupPage = () => {
           { name: "Home", url: "/" },
           { name: "About", url: "/about" },
           { name: "Contact", url: "/contact" },
+          { name: "Sign In", url: "/signin" },
+          { name: "Sign Up", url: "/signup" }
         ]}
       />
       <Card className="h-auto mx-auto bg-white border-0 text-black">

@@ -1,6 +1,6 @@
-import { HomeEmailInput } from "@/Components/MyComponents/BasicClientComponents/HomeEmailInput";
-import { Footer } from "@/Components/MyComponents/Footer";
-import { Navbar } from "@/Components/MyComponents/Navbar";
+import { HomeEmailInput } from "@/Components/MyComponents/Client/HomeEmailInput";
+import { Footer } from "@/Components/MyComponents/General/Footer";
+import { Navbar } from "@/Components/MyComponents/General/Navbar";
 import { Button } from "@/Components/ui/button";
 import { websiteName } from "@/constants";
 import { PencilIcon, Users, Youtube } from "lucide-react";
@@ -31,6 +31,8 @@ const Home = () => {
           { name: "Home", url: "/" },
           { name: "About", url: "/about" },
           { name: "Contact", url: "/contact" },
+          { name: "Sign In", url: "/signin" },
+          { name: "Sign Up", url: "/signup" }
         ]}/>
         <div className="h-lvh w-lvh flex flex-col justify-center items-center gap-3">
           <h2 className="text-6xl font-bold">Collaborate, Create, Conquer</h2>

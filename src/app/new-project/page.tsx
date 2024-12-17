@@ -1,7 +1,7 @@
 import { getEditors } from "@/actions/editor";
-import { Footer } from "@/Components/MyComponents/Footer";
+import { Footer } from "@/Components/MyComponents/General/Footer";
 import { NewProjectForm } from "@/Components/MyComponents/Forms/NewProjectForm";
-import { Navbar } from "@/Components/MyComponents/Navbar";
+import { Navbar } from "@/Components/MyComponents/General/Navbar";
 
 const NewProjectPage = async ({  }) => {
   const initialEditors = await getEditors();

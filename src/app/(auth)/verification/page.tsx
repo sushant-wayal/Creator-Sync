@@ -1,6 +1,6 @@
-import { Footer } from "@/Components/MyComponents/Footer";
+import { Footer } from "@/Components/MyComponents/General/Footer";
 import { VerificationForm } from "@/Components/MyComponents/Forms/VerificationForm";
-import { Navbar } from "@/Components/MyComponents/Navbar";
+import { Navbar } from "@/Components/MyComponents/General/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/Components/ui/card";
 
 const verificationPage = () => {
@@ -11,6 +11,8 @@ const verificationPage = () => {
           { name: "Home", url: "/" },
           { name: "About", url: "/about" },
           { name: "Contact", url: "/contact" },
+          { name: "Sign In", url: "/signin" },
+          { name: "Sign Up", url: "/signup" }
         ]}
       />
       <Card className="h-auto mx-auto bg-white border-0 text-black">

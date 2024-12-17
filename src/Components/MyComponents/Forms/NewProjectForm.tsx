@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import {useForm } from "react-hook-form";
 import { z } from "zod";
-import { ProfilePicture } from "../ProfilePicture";
+import { ProfilePicture } from "../General/ProfilePicture";
 import { Badge } from "@/Components/ui/badge";
 import { CalendarIcon, Plus, Search, X } from "lucide-react";
 import { Switch } from "@/Components/ui/switch";
@@ -58,6 +58,7 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
   const [instructions, setInstructions] = useState<Instructions[]>([]);
   const [fileStates, setFileStates] = useState<FileState[]>([]);
   const [fileUrl, setFileUrl] = useState<string>("");
+  const [fileName, setFileName] = useState<string>("");
   const { edgestore } = useEdgeStore();
   function updateFileProgress(key: string, progress: FileState['progress']) {
     setFileStates((fileStates) => {
@@ -79,15 +80,16 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
     try {
       const { title, description, projectType, duration, deadline } = values;
       await createProject({
-        title,
-        description,
-        type: projectType,
-        editorId: selectedEditorId,
-        fileUrl,
-        duration,
-        deadline,
-        instructions: instructions.map(({ content, nature }) => ({ content, nature }))
-      })
+              title,
+              description,
+              type: projectType,
+              editorId: selectedEditorId,
+              fileUrl,
+              fileName,
+              duration,
+              deadline,
+              instructions: instructions.map(({ content, nature }) => ({ content, nature }))
+            })
       toast.success("Project Created Successfully");
     } catch (err) {
       toast.error("Failed to create project");
@@ -131,7 +133,7 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
                           }
                         },
                       });
-                      console.log(url);
+                      setFileName(addedFileState.file.name);
                       setFileUrl(url);
                     } catch (err) {
                       updateFileProgress(addedFileState.key, 'ERROR');

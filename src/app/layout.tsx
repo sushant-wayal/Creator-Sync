@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
-import { Background } from "@/Components/MyComponents/Background";
+import { Background } from "@/Components/MyComponents/General/Background";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 
 export const metadata: Metadata = {
@@ -12,8 +12,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
+  signin
 }: Readonly<{
   children: React.ReactNode;
+  signin: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -27,6 +29,8 @@ export default async function RootLayout({
           <EdgeStoreProvider>
             <Background />
             {children}
+            {signin}
+            <div id="modal-root" />
           </EdgeStoreProvider>
         </SessionProvider>
       </body>

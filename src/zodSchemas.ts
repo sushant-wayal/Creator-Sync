@@ -77,3 +77,18 @@ export const NewProjectFormSchema = z.object({
     message: "Invalid Deadline"
   }),
 })
+
+export const RequestRevisionFormSchema = z.object({
+  content: z.string().min(1, {
+    message: "Content is Required"
+  }),
+  nature: z.enum(["COMPULSORY", "OPTIONAL"], {
+    message: "Invalid Nature"
+  })
+})
+
+export const ExtendDeadlineFormSchema = z.object({
+  days: z.number().int().min(1, {
+    message: "Days is Required"
+  })
+})

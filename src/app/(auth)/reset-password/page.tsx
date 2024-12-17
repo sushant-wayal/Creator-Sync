@@ -1,6 +1,6 @@
-import { Footer } from "@/Components/MyComponents/Footer";
+import { Footer } from "@/Components/MyComponents/General/Footer";
 import { ResetPasswordForm } from "@/Components/MyComponents/Forms/ResetPasswordForm";
-import { Navbar } from "@/Components/MyComponents/Navbar";
+import { Navbar } from "@/Components/MyComponents/General/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/Components/ui/card";
 
 const resetPasswordPage = () => {

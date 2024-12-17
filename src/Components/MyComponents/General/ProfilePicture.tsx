@@ -1,7 +1,7 @@
 "use client"
 
 import { auth } from "@/auth";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { useEffect } from "react";
 
 interface ProfilePictureProps {
