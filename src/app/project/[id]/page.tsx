@@ -2,6 +2,7 @@ import { getProject } from "@/actions/project"
 import { auth } from "@/auth"
 import { ExtendDeadlineForm } from "@/Components/MyComponents/Forms/ExtendDeadlineForm"
 import { RequestrevisionForm } from "@/Components/MyComponents/Forms/RequestRevisionForm"
+import { UploadNewVersionForm } from "@/Components/MyComponents/Forms/UploadNewVersionForm"
 import { Footer } from "@/Components/MyComponents/General/Footer"
 import { Navbar } from "@/Components/MyComponents/General/Navbar"
 import { ProfilePicture } from "@/Components/MyComponents/General/ProfilePicture"
@@ -35,25 +36,25 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
       {
         id: "1",
         content: "This is a demo instruction",
-        nature: "COMPULSORY",
+        nature: "COMPULSORY" as "COMPULSORY" | "OPTIONAL",
         status: "PENDING"
       },
       {
         id: "2",
         content: "This is a demo instruction",
-        nature: "OPTIONAL",
+        nature: "OPTIONAL" as "COMPULSORY" | "OPTIONAL",
         status: "PENDING"
       },
       {
         id: "3",
         content: "This is a demo instruction",
-        nature: "COMPULSORY",
+        nature: "COMPULSORY" as "COMPULSORY" | "OPTIONAL",
         status: "COMPLETED"
       },
       {
         id: "4",
         content: "This is a demo instruction",
-        nature: "OPTIONAL",
+        nature: "OPTIONAL" as "COMPULSORY" | "OPTIONAL",
         status: "PENDING"
       },
     ],
@@ -229,7 +230,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                     {isCreator ?
                       Number(editor.rating.toFixed(1)).toString()+" / 5"
                       :
-                      creator._count.createdProjects.toString() + "Projects"}
+                      creator._count.createdProjects.toString() + " Project"+(creator._count.createdProjects > 1 ? "s" : "")}
                   </Badge>
                 </div>
               </CardContent>
@@ -241,30 +242,45 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
               <CardContent className="w-full flex flex-col gap-2 justify-start">
                 <Dialog>
                   <DialogTrigger>
-                    <Button className="w-full">Request Revision</Button>
+                    <Button className="w-full">
+                      {isCreator ? "Request Revision" : totalInstructions == completedInstructions ? "Submit for Approval" : "Upload New Version"}
+                    </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className={`max-h-lvh h-auto overflow-y-scroll ${!isCreator && totalInstructions != completedInstructions ? "max-w-6xl" : "max-w-lg"}`}>
                     <DialogHeader>
-                      <DialogTitle>Request Revision</DialogTitle>
+                      <DialogTitle>
+                      {isCreator ? "Request Revision" : totalInstructions == completedInstructions ? "Submit for Approval" : "Upload New Version"}
+                      </DialogTitle>
                       <DialogDescription>
-                        Request a revision from the editor to make changes to the project
+                        {isCreator ? "Request a revision from the editor" : totalInstructions == completedInstructions ? "Submit the project for final review" : "Upload a new version of the project"}
                       </DialogDescription>
                     </DialogHeader>
-                    <RequestrevisionForm projectId={id}/>
+                    {isCreator ?
+                      <RequestrevisionForm projectId={id}/>
+                      :
+                      <UploadNewVersionForm
+                        projectId={id}
+                        instructions={Instructions.filter(({ status }) => status === "PENDING").map(({ id, content, nature }) => ({ id, content, nature }))}
+                      />
+                    }
                   </DialogContent>
                 </Dialog>
                 <Dialog>
                   <DialogTrigger>
-                    <Button variant="outline" className="w-full">Extend Deadline</Button>
+                    <Button variant="outline" className="w-full">
+                      {isCreator ? "Extend Deadline" : "Request Deadline Extension"}
+                    </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Extend Deadline</DialogTitle>
+                      <DialogTitle>
+                        {isCreator ? "Extend Deadline" : "Request Deadline Extension"}
+                      </DialogTitle>
                       <DialogDescription>
-                        Extend the deadline for the project
+                        {isCreator ? "Extend the deadline of the project" : "Request an extension of the deadline"}
                       </DialogDescription>
                     </DialogHeader>
-                    <ExtendDeadlineForm projectId={id}/>
+                    <ExtendDeadlineForm projectId={id} isCreator={isCreator}/>
                   </DialogContent>
                 </Dialog>
               </CardContent>

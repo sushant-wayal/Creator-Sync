@@ -27,7 +27,7 @@ export default async function RootLayout({
         />
         <SessionProvider>
           <EdgeStoreProvider>
-            <Background />
+            {/* <Background /> */}
             {children}
             {signin}
             <div id="modal-root" />

@@ -50,6 +50,13 @@ model User {
   dob                           DateTime?
   gender                        Gender?
   password                      String?
+  bio                           String?
+  location                      String?
+  website                       String?
+  youtubeLink                   String?
+  instagramLink                 String?
+  xLink                         String?
+  skills                        String[]       @default([])
   readyToEdit                   Boolean        @default(false)
   rating                        Float          @default(0)
   createdProjects               Project[]      @relation("CreatorRelation")

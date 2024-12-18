@@ -18,7 +18,7 @@ const singupPage = () => {
           { name: "Sign Up", url: "/signup" }
         ]}
       />
-      <Card className="h-auto mx-auto bg-white border-0 text-black">
+      <Card className="h-auto mx-auto bg-white border-2 text-black border-gray-600">
         <CardHeader>
           <CardTitle className="text-4xl">Sign Up</CardTitle>
           <CardDescription className="text-sm">Create an account to get started</CardDescription>

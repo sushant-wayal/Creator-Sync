@@ -22,9 +22,12 @@ export const ProfilePicture : React.FC<ProfilePictureProps> = ({ url, name, clas
       }
     }
     getProfile();
-  }, [])
+  }, []);
+  useEffect(() => {
+    console.log(url, name);
+  }, [url, name]);
   return (
-    <Avatar className={className}>
+    <Avatar key={url} className={className}>
       <AvatarImage src={url || undefined} alt={name} />
       <AvatarFallback>{name?.split(" ").map(word => word[0].toUpperCase()).join("") || "?"}</AvatarFallback>
     </Avatar>

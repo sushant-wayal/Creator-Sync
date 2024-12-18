@@ -15,7 +15,7 @@ const verificationPage = () => {
           { name: "Sign Up", url: "/signup" }
         ]}
       />
-      <Card className="h-auto mx-auto bg-white border-0 text-black">
+      <Card className="h-auto mx-auto bg-white border-2 text-black border-gray-600">
         <CardHeader>
           <CardTitle className="text-4xl">Email Verification</CardTitle>
           <CardDescription className="text-sm">Enter your credentials to access your account</CardDescription>

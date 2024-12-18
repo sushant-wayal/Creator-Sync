@@ -92,3 +92,22 @@ export const ExtendDeadlineFormSchema = z.object({
     message: "Days is Required"
   })
 })
+
+export const EditProfileFormSchema = z.object({
+  name: z.string().min(1, {
+    message: "Name is Required"
+  }),
+  username: z.string().min(1, {
+    message: "Username is Required"
+  }),
+  bio: z.string().nullable(),
+  location: z.string().nullable(),
+  email: z.string().email({
+    message: "Invalid Email"
+  }),
+  website: z.string().nullable(),
+  youtubeLink: z.string().nullable(),
+  xLink: z.string().nullable(),
+  instagramLink: z.string().nullable(),
+  skills: z.array(z.string())
+})

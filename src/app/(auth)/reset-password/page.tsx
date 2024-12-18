@@ -13,7 +13,7 @@ const resetPasswordPage = () => {
           { name: "Contact", url: "/contact" },
         ]}
       />
-      <Card className="h-auto mx-auto bg-white border-0 text-black">
+      <Card className="h-auto mx-auto bg-white border-2 text-black border-gray-600">
         <CardHeader>
           <CardTitle className="text-4xl">
             Reset Password

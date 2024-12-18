@@ -1,6 +1,6 @@
 "use client";
 
-import { requestRevision } from "@/actions/project";
+import { requestRevision } from "@/actions/instruction";
 import { Button } from "@/Components/ui/button";
 import { DialogFooter } from "@/Components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/Components/ui/form";
