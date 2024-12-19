@@ -1,13 +1,14 @@
 import { getUser } from "@/actions/user";
 import { auth } from "@/auth";
 import { Footer } from "@/Components/MyComponents/General/Footer";
-import { Navbar } from "@/Components/MyComponents/General/Navbar";
+import { UserNavbar } from "@/Components/MyComponents/General/UserNavbar";
 import { ProfilePicture } from "@/Components/MyComponents/General/ProfilePicture";
 import { Badge } from "@/Components/ui/badge";
 import { Button } from "@/Components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { Calendar, FileVideo, Globe, Instagram, Mail, MapPin, Twitter, Youtube } from "lucide-react";
 import Link from "next/link";
+import { urlencoded } from "express";
 
 interface ProfilePageProps {
   params: {
@@ -15,258 +16,283 @@ interface ProfilePageProps {
   };
 }
 
+export const demoUser = {
+  id: 1,
+  name: "John Doe",
+  username: "johndoe",
+  profilePicture: "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200",
+  email: "johndoe@gmai.com",
+  rating: 4.5,
+  createdAt: new Date(),
+  skills: ["Skill 1", "Skill 2", "Skill 3"],
+  isReadyToEdit: false,
+  bio: "I'm a demo user",
+  location: "Demo City, Demo Country",
+  website: "https://johndoe.com",
+  youtubeLink: "https://youtube.com/johndoe",
+  instagramLink: "https://instagram.com/johndoe",
+  xLink: "https://x.com/johndoe",
+  createdProjects: [
+    {
+      id: 1,
+      title: "Project 1",
+      type: "Type 1",
+      creatorId: 1,
+      editorId: 2,
+      completed: false,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      deadline: new Date(),
+      Instructions: [
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+      ]
+    },
+    {
+      id: 3,
+      title: "Project 3",
+      type: "Type 3",
+      creatorId: 1,
+      editorId: 3,
+      completed: false,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      deadline: new Date(),
+      Instructions: [
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+      ]
+    },
+    {
+      id: 4,
+      title: "Project 4",
+      type: "Type 4",
+      creatorId: 1,
+      editorId: 4,
+      completed: false,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      deadline: new Date(),
+      Instructions: [
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+      ]
+    }
+  ],
+  editedProjects: [
+    {
+      id: 2,
+      title: "Project 2",
+      type: "Type 2",
+      creatorId: 2,
+      editorId: 1,
+      completed: false,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      deadline: new Date(),
+      Instructions: [
+        {
+          status: "In Progress"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+      ]
+    },
+    {
+      id: 5,
+      title: "Project 5",
+      type: "Type 5",
+      creatorId: 3,
+      editorId: 1,
+      completed: false,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      deadline: new Date(),
+      Instructions: [
+        {
+          status: "In Progress"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+      ]
+    },
+    {
+      id: 6,
+      title: "Project 6",
+      type: "Type 6",
+      creatorId: 4,
+      editorId: 1,
+      completed: false,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      deadline: new Date(),
+      Instructions: [
+        {
+          status: "In Progress"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "COMPLETED"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "PENDING"
+        },
+        {
+          status: "COMPLETED"
+        },
+      ]
+    }
+  ]
+}
+
 const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
   const session = await auth();
   if (!session || !session.user) {
     throw new Error("User not authenticated");
   }
-  const { username } = params;
+  // const { username } = params;
+  const username = await decodeURIComponent(params.username);
   const activeUser = username === session.user.username;
-  const demoUser = {
-    id: 1,
-    name: "John Doe",
-    username: "johndoe",
-    profilePicture: "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200",
-    email: "johndoe@gmai.com",
-    rating: 4.5,
-    createdAt: new Date(),
-    skills: ["Skill 1", "Skill 2", "Skill 3"],
-    isReadyToEdit: false,
-    bio: "I'm a demo user",
-    location: "Demo City, Demo Country",
-    website: "https://johndoe.com",
-    youtubeLink: "https://youtube.com/johndoe",
-    instagramLink: "https://instagram.com/johndoe",
-    xLink: "https://x.com/johndoe",
-    createdProjects: [
-      {
-        id: 1,
-        title: "Project 1",
-        type: "Type 1",
-        creatorId: 1,
-        editorId: 2,
-        completed: false,
-        Instructions: [
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-        ]
-      },
-      {
-        id: 3,
-        title: "Project 3",
-        type: "Type 3",
-        creatorId: 1,
-        editorId: 3,
-        completed: false,
-        Instructions: [
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-        ]
-      },
-      {
-        id: 4,
-        title: "Project 4",
-        type: "Type 4",
-        creatorId: 1,
-        editorId: 4,
-        completed: false,
-        Instructions: [
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-        ]
-      }
-    ],
-    editedProjects: [
-      {
-        id: 2,
-        title: "Project 2",
-        type: "Type 2",
-        creatorId: 2,
-        editorId: 1,
-        completed: false,
-        Instructions: [
-          {
-            status: "In Progress"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-        ]
-      },
-      {
-        id: 5,
-        title: "Project 5",
-        type: "Type 5",
-        creatorId: 3,
-        editorId: 1,
-        completed: false,
-        Instructions: [
-          {
-            status: "In Progress"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-        ]
-      },
-      {
-        id: 6,
-        title: "Project 6",
-        type: "Type 6",
-        creatorId: 4,
-        editorId: 1,
-        completed: false,
-        Instructions: [
-          {
-            status: "In Progress"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "COMPLETED"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "PENDING"
-          },
-          {
-            status: "COMPLETED"
-          },
-        ]
-      }
-    ]
+  console.log("username", username);
+  console.log("user", session.user);
+  const user = await getUser(username);
+  if (!user) {
+    throw new Error("User not found");
   }
-  // const user = await getUser(username);
-  const user = demoUser;
+  // const user = demoUser;
   const noOfCompletedProjects = user.createdProjects.filter(({ completed }) => completed).length + user.editedProjects.filter(({ completed }) => completed).length;
   const noOfActiveProjects = user.createdProjects.filter(({ completed }) => !completed).length + user.editedProjects.filter(({ completed }) => !completed).length;
   const noOfCollaborations = (new Set([...user.createdProjects.map(({ editorId }) => editorId), ...user.editedProjects.map(({ creatorId }) => creatorId)])).size;
@@ -298,12 +324,7 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
   });
   return (
     <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
-      <Navbar links={[
-        {name: "Dashboard", url: "/dashboard"},
-        {name: "New Project", url: "/new-project"},
-        {name: "Profile", url: "/profile"},
-        {name: "Logout", url: "/logout"},
-      ]}/>
+      <UserNavbar/>
       <div className="flex justify-start items-start gap-4 w-5/6">
         <div className="w-1/3 flex flex-col justify-start items-center gap-4">
           <div className="w-full rounded-xl border-[1px] border-gray-300 p-8">
@@ -312,7 +333,7 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
               <h2 className="text-2xl font-bold text-black">{user.name}</h2>
               <h3 className="text-lg text-gray-500">{user.username}</h3>
               {activeUser && (
-                <Link href={`edit-profile`}><Button>Edit Profile</Button></Link>
+                <Link href={`/profile/${username}/edit`}><Button>Edit Profile</Button></Link>
               )}
             </div>
             <hr className="w-full border-1 border-gray-200 my-5"/>
@@ -384,9 +405,9 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
           </div>
           <div className="w-full rounded-xl border-[1px] border-gray-300 p-8">
             <p className="text-2xl font-bold text-black mb-5">Projects</p>
-            <Tabs defaultValue={user.isReadyToEdit ? "edited" : "created"}>
+            <Tabs defaultValue={user.readyToEdit ? "edited" : "created"}>
               <TabsList className="w-1/3">
-                {user.isReadyToEdit ?
+                {user.readyToEdit ?
                   <>
                     <TabsTrigger className="text-center w-1/2" value="edited">Edited</TabsTrigger>
                     <TabsTrigger className="text-center w-1/2" value="created">Created</TabsTrigger>

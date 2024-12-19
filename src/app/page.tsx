@@ -1,6 +1,6 @@
 import { HomeEmailInput } from "@/Components/MyComponents/Client/HomeEmailInput";
 import { Footer } from "@/Components/MyComponents/General/Footer";
-import { Navbar } from "@/Components/MyComponents/General/Navbar";
+import { PublicNavbar } from "@/Components/MyComponents/General/PublicNavbar";
 import { Button } from "@/Components/ui/button";
 import { websiteName } from "@/constants";
 import { PencilIcon, Users, Youtube } from "lucide-react";
@@ -27,13 +27,7 @@ const Home = () => {
   return (
     <>
       <div className="w-full">
-        <Navbar links={[
-          { name: "Home", url: "/" },
-          { name: "About", url: "/about" },
-          { name: "Contact", url: "/contact" },
-          { name: "Sign In", url: "/signin" },
-          { name: "Sign Up", url: "/signup" }
-        ]}/>
+        <PublicNavbar/>
         <div className="h-lvh w-lvh flex flex-col justify-center items-center gap-3">
           <h2 className="text-6xl font-bold">Collaborate, Create, Conquer</h2>
           <h3 className="text-xl text-gray-600 w-1/2 text-center">

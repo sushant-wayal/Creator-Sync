@@ -2,7 +2,7 @@ import { getUser } from "@/actions/user";
 import { auth } from "@/auth";
 import { EditProfileForm } from "@/Components/MyComponents/Forms/EditProfileForm";
 import { Footer } from "@/Components/MyComponents/General/Footer";
-import { Navbar } from "@/Components/MyComponents/General/Navbar";
+import { UserNavbar } from "@/Components/MyComponents/General/UserNavbar";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/Components/ui/card";
 
 interface EditProfilePageProps {
@@ -12,7 +12,7 @@ interface EditProfilePageProps {
 }
 
 const EditProfilePage : React.FC<EditProfilePageProps> = async ({ params }) => {
-  const { username } = params;
+  const username = await decodeURIComponent(params.username);
   const session = await auth();
   if (!session || !session.user) {
     throw new Error("User not authenticated");
@@ -33,19 +33,14 @@ const EditProfilePage : React.FC<EditProfilePageProps> = async ({ params }) => {
     instagramLink: "https://instagram.com/johndoe",
     skills: ["Skill 1", "Skill 2", "Skill 3"],
   }
-  // const user = await getUser(username);
-  const user = demoUser;
+  const user = await getUser(username);
+  // const user = demoUser;
   if (!user) {
     throw new Error("User not found");
   }
   return (
     <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
-      <Navbar links={[
-        {name: "Dashboard", url: "/dashboard"},
-        {name: "New Project", url: "/new-project"},
-        {name: "Profile", url: "/profile"},
-        {name: "Logout", url: "/logout"},
-      ]}/>
+      <UserNavbar/>
       <Card className="w-3/5">
         <CardHeader>
           <CardTitle>Edit Profile</CardTitle>

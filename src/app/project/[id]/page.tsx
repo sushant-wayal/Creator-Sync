@@ -4,7 +4,7 @@ import { ExtendDeadlineForm } from "@/Components/MyComponents/Forms/ExtendDeadli
 import { RequestrevisionForm } from "@/Components/MyComponents/Forms/RequestRevisionForm"
 import { UploadNewVersionForm } from "@/Components/MyComponents/Forms/UploadNewVersionForm"
 import { Footer } from "@/Components/MyComponents/General/Footer"
-import { Navbar } from "@/Components/MyComponents/General/Navbar"
+import { UserNavbar } from "@/Components/MyComponents/General/UserNavbar"
 import { ProfilePicture } from "@/Components/MyComponents/General/ProfilePicture"
 import { Badge } from "@/Components/ui/badge"
 import { Button } from "@/Components/ui/button"
@@ -106,20 +106,16 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
     },
     createdAt: new Date()
   }
-  // const { title, description, type, duration, deadline, Instructions, FileVersion, isCreator, completed, creator, editor, createdAt } = await getProject(id);
-  const { title, description, type, duration, deadline, Instructions, FileVersion, isCreator, completed, creator, editor, createdAt } = demoProject;
+  const { title, description, type, duration, deadline, Instructions, FileVersion, isCreator, completed, creator, editor, createdAt } = await getProject(id);
+
+  // const { title, description, type, duration, deadline, Instructions, FileVersion, isCreator, completed, creator, editor, createdAt } = demoProject;
   const totalInstructions = Instructions.length;
   const completedInstructions = Instructions.filter((instruction) => instruction.status === "COMPLETED").length;
   const status = completed ? "Completed" : completedInstructions === 0 ? "Just Started" : completedInstructions === totalInstructions ? "Final Review" : "In Progress";
   const progress = ((completedInstructions + 1) / (totalInstructions + 2)) * 100;
   return (
     <div className="w-lvw h-lvh flex flex-col gap-4 justify-between items-center">
-      <Navbar links={[
-        {name: "Dashboard", url: "/dashboard"},
-        {name: "New Project", url: "/new-project"},
-        {name: "Profile", url: "/profile"},
-        {name: "Logout", url: "/logout"},
-      ]}/>
+      <UserNavbar/>
       <Card className="w-4/5 flex flex-col gap-4 justify-start items-start">
         <CardHeader className="w-full flex flex-row items-center justify-between">
           <div className="flex flex-col justify-center items-start">
@@ -218,23 +214,23 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
             </CardContent>
           </Card>
           <div className="w-[30%] flex flex-col gap-4 justify-start items-start">
-            <Card className="w-full">
+            {(!isCreator || (isCreator && editor)) && <Card className="w-full">
               <CardHeader>
                 <CardTitle>{isCreator ? "Editor" : "Creator"}</CardTitle>
               </CardHeader>
               <CardContent className="flex justify-start items-center gap-4">
-                <ProfilePicture url={isCreator ? editor.profilePicture : creator.profilePicture} name={isCreator ? editor.name : creator.name} />
+                <ProfilePicture url={isCreator ? editor?.profilePicture : creator.profilePicture} name={isCreator ? editor?.name : creator.name} />
                 <div className="flex flex-col gap-1 justify-center items-start">
-                  <p className="font-semibold">{isCreator ? editor.name : creator.name}</p>
+                  <p className="font-semibold">{isCreator ? editor?.name : creator.name}</p>
                   <Badge variant="default" className="w-fit">
                     {isCreator ?
-                      Number(editor.rating.toFixed(1)).toString()+" / 5"
+                      Number(editor?.rating.toFixed(1)).toString()+" / 5"
                       :
                       creator._count.createdProjects.toString() + " Project"+(creator._count.createdProjects > 1 ? "s" : "")}
                   </Badge>
                 </div>
               </CardContent>
-            </Card>
+            </Card>}
             <Card className="w-full">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>

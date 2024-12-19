@@ -5,6 +5,11 @@ import { db } from "@/lib/db"
 import Google from "next-auth/providers/google"
 import { domain, FORGOT_PASSWORD_EMAIL, PASSWORD_NOT_SET, VERIFICATION_EMAIL } from "./constants"
 import axios from "axios"
+import { User as PrismaUser } from "@prisma/client"
+
+interface User extends PrismaUser {
+  profilePicture: string;
+}
  
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -20,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         gender: {},
         profilePicture: {},
       },
-      authorize: async ({ usernameOrEmail, password, newUser, name, username, email, dob, gender, profilePicture }) => {
+      authorize: async ({ usernameOrEmail, password, newUser, name, username, email, dob, gender, profilePicture }): Promise<User | null> => {
         console.log("credentials")
         console.log("usernameOrEmail", usernameOrEmail);
         console.log("password", password);
@@ -49,7 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           console.log("Sending Email");
           await axios.post(`${domain}/api/send-email`, { email: user.email, emailType: VERIFICATION_EMAIL });
           console.log("Email Sent");
-          return user;
+          return { ...user, profilePicture: user.profilePicture || '' };
         }
         const user = await db.user.findFirst({
           where: {
@@ -66,7 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
         const passwordMatch = await compare(password as string, user.password as string);
         if (!passwordMatch) throw new Error("Password does not match");
-        return user;
+        return { ...user, profilePicture: user.profilePicture || '' };
       },
     }),
     Google({
@@ -111,7 +116,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (!user) return token;
       token.id = user.id;
       token.email = user.email;
-      token.username = user.username;
+      token.username = user.username || user.email;
+      token.profilePicture = user.profilePicture || user.image;
       return token;
     },
     async session({ session, token }) {
@@ -119,6 +125,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.id = token.id as string;
       session.user.email = token.email as string;
       session.user.username = token.username as string;
+      session.user.profilePicture = token.profilePicture as string;
       return session;
     }
   },

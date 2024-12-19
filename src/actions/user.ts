@@ -21,6 +21,9 @@ export const getUser = async (username: string) => {
           creatorId: true,
           editorId: true,
           completed: true,
+          createdAt: true,
+          updatedAt: true,
+          deadline: true,
           Instructions: {
             select: {
               status: true,
@@ -39,6 +42,9 @@ export const getUser = async (username: string) => {
           creatorId: true,
           editorId: true,
           completed: true,
+          createdAt: true,
+          updatedAt: true,
+          deadline: true,
           Instructions: {
             select: {
               status: true,

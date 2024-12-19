@@ -79,7 +79,7 @@ export const SignupForm = () => {
       if (result?.error) {
         throw new Error(result.error);
       }
-      router.push("/dashboard");
+      router.push(`/profile/${username}/edit`);
       toast.success("Signed Up Successfully", { id: toastId });
     } catch (error : any) {
       // toast.error(`Error Signing Up : ${error.response.data.message || "Try Again"}`, { id: toastId })

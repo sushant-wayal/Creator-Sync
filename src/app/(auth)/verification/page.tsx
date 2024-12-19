@@ -1,20 +1,12 @@
 import { Footer } from "@/Components/MyComponents/General/Footer";
 import { VerificationForm } from "@/Components/MyComponents/Forms/VerificationForm";
-import { Navbar } from "@/Components/MyComponents/General/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/Components/ui/card";
+import { PublicNavbar } from "@/Components/MyComponents/General/PublicNavbar";
 
 const verificationPage = () => {
   return (
     <div className="w-lvw h-lvh flex flex-col justify-between items-center">
-      <Navbar
-        links={[
-          { name: "Home", url: "/" },
-          { name: "About", url: "/about" },
-          { name: "Contact", url: "/contact" },
-          { name: "Sign In", url: "/signin" },
-          { name: "Sign Up", url: "/signup" }
-        ]}
-      />
+      <PublicNavbar/>
       <Card className="h-auto mx-auto bg-white border-2 text-black border-gray-600">
         <CardHeader>
           <CardTitle className="text-4xl">Email Verification</CardTitle>

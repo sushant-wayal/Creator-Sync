@@ -70,11 +70,10 @@ export const SignInForm = () => {
     const toastId = toast.loading(`Signing In with ${provider}...`)
     try {
       const result = await signIn(provider, {
-        redirect: false,
-        callbackUrl: "/dashboard"
+        redirectTo: "/dashboard"
       });
       if (result?.error) throw new Error(result.error);
-      toast.success(`Signed In with ${provider}`, { id: toastId });
+      // toast.success(`Signed In with ${provider}`, { id: toastId });
     } catch (error : any) {
       // toast.error(`Error Signing In with ${provider} : ${error.response.data.message || "Try Again"}`, { id: toastId })
       toast.error(`Error Signing In with ${provider} Try Again`, { id: toastId })
