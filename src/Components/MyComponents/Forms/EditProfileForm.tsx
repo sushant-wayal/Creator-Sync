@@ -6,18 +6,16 @@ import { Button } from "@/Components/ui/button";
 import { CardContent, CardFooter } from "@/Components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/Components/ui/form";
 import { Input } from "@/Components/ui/input";
-import { Progress } from "@/Components/ui/progress";
-import { SingleImageDropzone } from "@/Components/ui/single-image-dropzone";
 import { Textarea } from "@/Components/ui/textarea";
-import { useEdgeStore } from "@/lib/edgestore";
 import { EditProfileFormSchema } from "@/zodSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle, Loader2, Upload, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { SingleImageUpload } from "../General/SingleImageUpload";
 
 interface EditProfileFormProps {
   user: {
@@ -50,23 +48,7 @@ export const EditProfileForm : React.FC<EditProfileFormProps> = ({ user : {
 } }) => {
   const router = useRouter();
   const [userSkills, setUserSkills] = useState<string[]>(skills);
-  const { edgestore } = useEdgeStore();
-  const [file, setFile] = useState<File | undefined>(undefined);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [userProfilePicture, setUserProfilePicture] = useState<string | null>(profilePicture);
-  const uploadImage = async (file : File) =>  {
-    setUploading(true);
-    const { url, thumbnailUrl } = await edgestore.publicImages.upload({
-      file,
-      onProgressChange: (progress) => {
-        setUploadProgress(progress);
-      }
-    });
-    setUploading(false);
-    setUserProfilePicture(thumbnailUrl || url);
-    return thumbnailUrl || url;
-  }
   const form = useForm<z.infer<typeof EditProfileFormSchema>>({
     resolver: zodResolver(EditProfileFormSchema),
     defaultValues: {
@@ -112,54 +94,7 @@ export const EditProfileForm : React.FC<EditProfileFormProps> = ({ user : {
         className="space-y-2"
       >
         <CardContent className="space-y-4">
-          <div className="flex flex-col items-center space-y-4">
-            <SingleImageDropzone
-              width={200}
-              height={200}
-              value={file}
-              onChange={(file) => {
-                setUploadProgress(0);
-                setFile(file);
-              }}
-              className="border-2 border-dashed border-[#444444]"
-            />
-            {file && (
-              uploadProgress < 100 ? (
-              <div className="flex items-center gap-2 w-1/3">
-                <Progress value={uploadProgress} className="w-full h-2" />
-                <span>
-                  {Math.round(uploadProgress)}%
-                </span>
-              </div>
-              ) : (
-              <div className="flex justify-center items-center gap-2 w-1/2">
-                <CheckCircle className="text-green-500" />
-                <p className="text-center"> Profile Picture Uploaded </p>
-              </div>
-              )
-            )}
-            <Button
-              type="button"
-              disabled={uploading}
-              className="disabled:cursor-not-allowed text-black"
-              variant="outline"
-              onClick={async () => {
-                if (file) await uploadImage(file);
-              }}
-            >
-              {uploading ? (
-                <>
-                  <Loader2 className="animate-spin h-5 w-5" />
-                  <span className="ml-2">Uploading...</span>
-                </>
-              ) : (
-                <>
-                  <Upload className="h-5 w-5" />
-                  <span className="ml-2">Upload Profile Picture</span>
-                </>
-              )}
-            </Button>
-          </div>
+          <SingleImageUpload setUrl={setUserProfilePicture} buttonText="Upload Profile Picture"/>
           <FormField
             control={form.control}
             name="name"

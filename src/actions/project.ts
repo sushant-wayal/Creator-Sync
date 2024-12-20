@@ -103,6 +103,21 @@ export const getProject = async (id: string) => {
           url: true,
           name: true,
           createdAt: true
+        },
+        orderBy: {
+          version: "desc"
+        }
+      },
+      ThumbnailVersion: {
+        select: {
+          id: true,
+          url: true,
+          name: true,
+          version: true,
+          createdAt: true
+        },
+        orderBy: {
+          createdAt: "desc"
         }
       }
     }
@@ -110,7 +125,7 @@ export const getProject = async (id: string) => {
   if (!project) {
     throw new Error("Project not found");
   }
-  if (project.creator.id != userId || project.editorId != userId) {
+  if (project.editorId && (project.creator.id != userId || project.editorId != userId)) {
     throw new Error("User not authorized");
   }
   return {

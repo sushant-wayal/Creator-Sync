@@ -73,3 +73,18 @@ export const updateUser = async (username: string, data: any) => {
   });
   return user;
 }
+
+export const updateYoutubeRefreshToken = async (id: string, refreshToken: string) => {
+  const session = await auth();
+  if (!session || !session.user) {
+    throw new Error("User not authenticated");
+  }
+  await db.user.update({
+    where: {
+      id
+    },
+    data: {
+      youtubeRefreshToken: refreshToken
+    }
+  });
+}

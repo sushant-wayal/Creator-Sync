@@ -47,6 +47,7 @@ model User {
   emailVerificationTokenExpires DateTime?
   passwordResetToken            String?
   passwordResetTokenExpires     DateTime?
+  youtubeRefreshToken           String?
   dob                           DateTime?
   gender                        Gender?
   password                      String?
@@ -75,6 +76,17 @@ model FileVersion {
   url       String
   projectId String
   project   Project  @relation("FileVersionRelation", fields: [projectId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ThumbnailVersion {
+  id        String   @id @default(cuid())
+  version   Int
+  name      String
+  url       String
+  projectId String
+  project   Project  @relation("ThumbnailVersionRelation", fields: [projectId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -109,22 +121,23 @@ enum ProjectType {
 }
 
 model Project {
-  id           String         @id @default(cuid())
+  id           String             @id @default(cuid())
   title        String
   description  String
   type         ProjectType
-  creator      User           @relation("CreatorRelation", fields: [creatorId], references: [id])
+  creator      User               @relation("CreatorRelation", fields: [creatorId], references: [id])
   creatorId    String
-  editor       User?          @relation("EditorRelation", fields: [editorId], references: [id])
+  editor       User?              @relation("EditorRelation", fields: [editorId], references: [id])
   editorId     String?
   duration     Int
   deadline     DateTime
-  completed    Boolean        @default(false)
-  FileVersion  FileVersion[]  @relation("FileVersionRelation")
-  Instructions Instructions[] @relation("InstructionsRelation")
+  completed    Boolean            @default(false)
+  FileVersion  FileVersion[]      @relation("FileVersionRelation")
+  ThumbnailVersion    ThumbnailVersion[] @relation("ThumbnailVersionRelation")
+  Instructions Instructions[]     @relation("InstructionsRelation")
   Chat         Chat[]         
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 }
 
 model Notification {

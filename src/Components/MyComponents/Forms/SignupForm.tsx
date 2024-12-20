@@ -5,7 +5,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/Components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover";
-import { CalendarIcon, CheckCircle, Eye, EyeOff, Loader2 } from "lucide-react";
+import { CalendarIcon, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Calendar } from "@/Components/ui/calendar";
 import { format } from "date-fns";
 import { SignUpFormSchema } from "@/zodSchemas";
@@ -16,31 +16,13 @@ import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEdgeStore } from "@/lib/edgestore";
-import { SingleImageDropzone } from "@/Components/ui/single-image-dropzone";
-import { Progress } from "@/Components/ui/progress";
+import { SingleImageUpload } from "../General/SingleImageUpload";
 
 export const SignupForm = () => {
   const router = useRouter();
-  const { edgestore } = useEdgeStore();
   const defaultEmail = useSearchParams().get("email");
   const [showing, setShowing] = useState<boolean>(false);
-  const [file, setFile] = useState<File | undefined>(undefined);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
-  const uploadImage = async (file : File) =>  {
-    setUploading(true);
-    const { url, thumbnailUrl } = await edgestore.publicImages.upload({
-      file,
-      onProgressChange: (progress) => {
-        setUploadProgress(progress);
-      }
-    });
-    setUploading(false);
-    setProfilePicture(thumbnailUrl || url);
-    return thumbnailUrl || url;
-  }
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
     defaultValues:  {
@@ -54,7 +36,6 @@ export const SignupForm = () => {
   const onSubmit = async(values: z.infer<typeof SignUpFormSchema>) => {
     const toastId = toast.loading("Signing Up...");
     let uploadedProfilePicture = profilePicture;
-    if (file && !profilePicture) uploadedProfilePicture = await uploadImage(file);
     try {
       const { 
         name,
@@ -92,50 +73,7 @@ export const SignupForm = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4"
       >
-        <div className="flex flex-col items-center space-y-4">
-          <SingleImageDropzone
-            width={200}
-            height={200}
-            value={file}
-            onChange={(file) => {
-              setUploadProgress(0);
-              setFile(file);
-            }}
-            className="border-2 border-dashed border-[#444444]"
-          />
-          {file && (
-            uploadProgress < 100 ? (
-            <div className="flex items-center gap-2 w-1/3">
-              <Progress value={uploadProgress} className="w-full h-2" />
-              <span>
-                {Math.round(uploadProgress)}%
-              </span>
-            </div>
-            ) : (
-            <div className="flex justify-center items-center gap-2 w-1/2">
-              <CheckCircle className="text-green-500" />
-              <p className="text-center"> Profile Picture Uploaded </p>
-            </div>
-            )
-          )}
-          <Button
-            type="button"
-            disabled={uploading || !file || uploadProgress > 0}
-            className="disabled:cursor-not-allowed bg-[#222222] rounded-full"
-            onClick={async () => {
-              if (file) await uploadImage(file);
-            }}
-          >
-            {uploading ? (
-              <>
-                <Loader2 className="animate-spin h-5 w-5" />
-                <span className="ml-2">Uploading...</span>
-              </>
-            ) : (
-              "Upload Profile Picture"
-            )}
-          </Button>
-        </div>
+        <SingleImageUpload setUrl={setProfilePicture} buttonText="Upload Profile Picture"/>
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
