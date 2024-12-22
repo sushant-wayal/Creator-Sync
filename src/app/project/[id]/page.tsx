@@ -19,6 +19,10 @@ import { UploadThumbnail } from "@/Components/MyComponents/Client/UploadThumbnai
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/Components/ui/hover-card"
 import { ApproveUploadButton } from "@/Components/MyComponents/Client/ApproveUploadButton"
 import { db } from "@/lib/db"
+import { RequestEditButton } from "@/Components/MyComponents/Client/RequestEditButton"
+import { EditRequests } from "@/Components/MyComponents/Client/EditRequests"
+import { RequestEditorDialog } from "@/Components/MyComponents/Client/RequestEditorDialog"
+import { getEditorsToRequest } from "@/actions/editor"
 
 interface ProjectPageProps {
   params: {
@@ -132,16 +136,60 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
         createdProjects: 1
       }
     },
-    editor: {
-      id: "2",
-      name: "Demo Editor",
-      profilePicture: "https://example.com",
-      rating: 4.5
-    },
-    createdAt: new Date()
+    // editor: {
+    //   id: "2",
+    //   name: "Demo Editor",
+    //   profilePicture: "https://example.com",
+    //   rating: 4.5
+    // },
+    createdAt: new Date(),
+    requests: [
+      {
+        id: "1",
+        createdAt: new Date(),
+        editor: {
+          id: "2",
+          name: "Demo Editor",
+          profilePicture: "https://example.com",
+          rating: 4.5,
+          skills: ["Demo Skill"],
+          _count: {
+            editedProjects: 10
+          }
+        }
+      },
+      {
+        id: "2",
+        createdAt: new Date(),
+        editor: {
+          id: "3",
+          name: "Demo Editor",
+          profilePicture: "https://example.com",
+          rating: 4.5,
+          skills: ["Demo Skill"],
+          _count: {
+            editedProjects: 10
+          }
+        }
+      },
+      {
+        id: "3",
+        createdAt: new Date(),
+        editor: {
+          id: "4",
+          name: "Demo Editor",
+          profilePicture: "https://example.com",
+          rating: 4.5,
+          skills: ["Demo Skill"],
+          _count: {
+            editedProjects: 10
+          }
+        }
+      }
+    ]
   }
-  // const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt } = await getProject(id);
-  const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt } = demoProject;
+  // const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests } = await getProject(id);
+  const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests } = demoProject;
   // if (editor && session.user.id != creator.id && session.user.id != editor.id) throw new Error("You are not authorized to view this project");
   const totalInstructions = Instructions.length;
   const completedInstructions = Instructions.filter((instruction) => instruction.status === "COMPLETED").length;
@@ -154,21 +202,85 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
     }
   });
   const refreshToken = user?.youtubeRefreshToken || null;
+  const demoEditoraToRequest = [
+    {
+      id: "1",
+      name: "John Doe",
+      username: "john_doe",
+      profilePicture: "https://randomuser.me/api/port",
+      skills: ["JavaScript", "React", "Node.js"],
+      rating: 4.5,
+      editedProjects: [{ deadline: new Date() }],
+      _count: { editedProjects: 5 }
+    },
+    {
+      id: "2",
+      name: "Jane Doe",
+      username: "jane_doe",
+      profilePicture: "https://randomuser.me/api/port",
+      skills: ["TypeScript", "React", "Node.js"],
+      rating: 4.2,
+      editedProjects: [{ deadline: new Date() }],
+      _count: { editedProjects: 3 }
+    },
+    {
+      id: "3",
+      name: "John Smith",
+      username: "john_smith",
+      profilePicture: "https://randomuser.me/api/port",
+      skills: ["JavaScript", "React", "Node.js"],
+      rating: 4.7,
+      editedProjects: [{ deadline: new Date() }],
+      _count: { editedProjects: 7 }
+    },
+    {
+      id: "4",
+      name: "Jane Smith",
+      username: "jane_smith",
+      profilePicture: "https://randomuser.me/api/port",
+      skills: ["TypeScript", "React", "Node.js"],
+      rating: 4.3,
+      editedProjects: [{ deadline: new Date() }],
+      _count: { editedProjects: 4 }
+    }
+  ];
+  // const allEditors = await getEditorsToRequest();
+  const allEditors = demoEditoraToRequest;
   return (
     <div className="w-lvw h-lvh flex flex-col gap-4 justify-between items-center">
       <UserNavbar/>
-      <Card className="w-4/5 flex flex-col gap-4 justify-start items-start border-none">
+      <Card className="w-4/5 flex flex-col gap-4 justify-start items-start border-none shadow-none">
         <CardHeader className="w-full flex flex-row items-center justify-between">
           <div className="flex flex-col justify-center items-start">
             <CardTitle className="text-4xl">{title}</CardTitle>
             <CardDescription className="text-lg">{description}</CardDescription>
           </div>
-          {(!isCreator || (isCreator && editor)) && <Link href="/chat">
-            <Button className="flex justify-between items-center gap-3">
-              <MessageSquare size={24} />
-              <p>{isCreator ? "Chat with Editor" : "Chat with Creator"}</p>
-            </Button>
-          </Link>}
+          {editor ? 
+            <Link href="/chat">
+              <Button className="flex justify-between items-center gap-3">
+                <MessageSquare size={24} />
+                <p>{isCreator ? "Chat with Editor" : "Chat with Creator"}</p>
+              </Button>
+            </Link>
+            :
+            !isCreator ? 
+              <RequestEditButton projectId={id}/>
+              :
+              <Dialog>
+                <DialogTrigger>
+                  <Button>Request Editor</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Request an Editor</DialogTitle>
+                    <DialogDescription>
+                      Search and request an editor for your project : {title}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <RequestEditorDialog projectId={id} allEditors={allEditors}/>
+                </DialogContent>
+              </Dialog>
+          }
         </CardHeader>
         <CardContent className="w-full flex justify-between gap-5 items-start">
           <Card className="flex-grow">
@@ -446,6 +558,13 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
           </div>
         </CardContent>
         <CardFooter></CardFooter>
+      </Card>
+      <Card className="w-4/5 mx-auto">
+        <CardHeader>
+          <CardTitle>Editor Requests</CardTitle>
+          <CardDescription>{requests.length} editor{requests.length > 1 ? "s" : ""} requested to edit this project</CardDescription>
+        </CardHeader>
+        <EditRequests initialRequests={requests}/>
       </Card>
       <Footer />
     </div>

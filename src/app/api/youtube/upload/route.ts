@@ -41,7 +41,6 @@ export async function POST(req: NextRequest) {
   const { title, description, FileVersion, ThumbnailVersion } = project || {};
   const videoUrl = FileVersion?.[0]?.url;
   const thumbnailUrl = ThumbnailVersion?.[0]?.url;
-  console.log("req",{ refreshToken, title, description, videoUrl, thumbnailUrl });
   oauth2Client.setCredentials({ refresh_token: refreshToken });
   const { credentials : { access_token } } = await oauth2Client.refreshAccessToken();
   oauth2Client.setCredentials({ access_token });
@@ -73,7 +72,6 @@ export async function POST(req: NextRequest) {
       body: videoStream,
     },
   });
-  console.log("youtubeResponse", youtubeResponse);
   const videoId = youtubeResponse.data.id;
   if (thumbnailUrl) {
     const thumbnailResponse = await axios({

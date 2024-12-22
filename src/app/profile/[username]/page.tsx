@@ -29,7 +29,7 @@ export const demoUser = {
   rating: 4.5,
   createdAt: new Date(),
   skills: ["Skill 1", "Skill 2", "Skill 3"],
-  isReadyToEdit: false,
+  readyToEdit: false,
   bio: "I'm a demo user",
   location: "Demo City, Demo Country",
   website: "https://johndoe.com",
@@ -298,8 +298,6 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
   // const { username } = params;
   const username = await decodeURIComponent(params.username);
   const activeUser = username === session.user.username;
-  console.log("username", username);
-  console.log("user", session.user);
   const user = await getUser(username);
   if (!user) {
     throw new Error("User not found");

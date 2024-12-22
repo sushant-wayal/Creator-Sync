@@ -176,10 +176,10 @@ export const SignInForm = () => {
                     />
                     <Button
                       type="submit"
-                      disabled={forgotPasswordform.formState.isSubmitting}
+                      disabled={forgotPasswordform.formState.isSubmitting ?? false}
                       className="disabled:cursor-not-allowed relative left-1/2 -translate-x-1/2 rounded-full"
                     >
-                      {forgotPasswordform.formState.isSubmitting ? (
+                      {forgotPasswordform.formState.isSubmitting ?? false ? (
                         <>
                           <Loader2 className="animate-spin h-5 w-5" />
                           <span className="ml-2">Sending Reset Link...</span>
@@ -195,10 +195,10 @@ export const SignInForm = () => {
           </Dialog>
           <Button
             type="submit"
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting ?? false}
             className="w-1/3 disabled:cursor-not-allowed relative left-1/2 -translate-x-1/2 rounded-full"
           >
-            {form.formState.isSubmitting ? (
+            {form.formState.isSubmitting ?? false ? (
               <>
                 <Loader2 className="animate-spin h-5 w-5" />
                 <span className="ml-2">Signing In...</span>

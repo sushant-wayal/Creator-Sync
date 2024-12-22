@@ -23,9 +23,6 @@ export const ProfilePicture : React.FC<ProfilePictureProps> = ({ url, name, clas
     }
     getProfile();
   }, []);
-  useEffect(() => {
-    console.log(url, name);
-  }, [url, name]);
   return (
     <Avatar key={url} className={className}>
       <AvatarImage src={url || undefined} alt={name} />

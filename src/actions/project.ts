@@ -34,7 +34,11 @@ export const createProject = async (data: CreateProjectInput) => {
       description,
       type,
       creatorId,
-      editorId,
+      requestEditors: editorId ? {
+        create: {
+          editorId
+        }
+      } : undefined,
       duration,
       deadline,
       FileVersion: {
@@ -119,6 +123,36 @@ export const getProject = async (id: string) => {
         orderBy: {
           createdAt: "desc"
         }
+      },
+      requests: {
+        where: {
+          status: "PENDING"
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          editor: {
+            select: {
+              id: true,
+              name: true,
+              profilePicture: true,
+              rating: true,
+              skills: true,
+              _count: {
+                select: {
+                  editedProjects: {
+                    where: {
+                      completed: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        orderBy: {
+          createdAt: "desc"
+        }
       }
     }
   });
@@ -164,6 +198,67 @@ export const extendDeadline = async (projectId: string, days: number) => {
     },
     data: {
       deadline: new Date(new Date(project.deadline).getTime() + days * 24 * 60 * 60 * 1000)
+    }
+  });
+}
+
+export const getAllProjects = async () => {
+  const session = await auth();
+  if (!session || !session.user) {
+    throw new Error("User not authenticated");
+  }
+  const userId = session.user.id;
+  if (!userId) {
+    throw new Error("User ID is undefined");
+  }
+  const projects = await db.project.findMany({
+    where: {
+      NOT: {
+        OR: [
+          { creatorId: userId },
+          { editorId: userId }
+        ]
+      },
+      requests: {
+        none: {
+          editorId: userId
+        }
+      }
+    },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          name: true,
+          profilePicture: true,
+          youtubeRefreshToken: true
+        }
+      },
+      Instructions: {
+        select: {
+          nature: true,
+        }
+      },
+      requests: {
+        select: {
+          id: true,
+        },
+      },
+    },
+    orderBy: {
+      updatedAt: "desc"
+    }
+  })
+  return projects.map(project => {
+    const compulsoryInstructions = project.Instructions.filter(instruction => instruction.nature == "COMPULSORY").length;
+    const optionalInstructions = project.Instructions.filter(instruction => instruction.nature == "OPTIONAL").length;
+    return {
+      ...project,
+      _count: {
+        requests: project.requests.length,
+        compulsoryInstructions,
+        optionalInstructions
+      },
     }
   });
 }

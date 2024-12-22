@@ -9,7 +9,6 @@ const CallbackPage = async ({ searchParams }: { searchParams: { [key: string]: s
     throw new Error("Authorization code is null");
   }
   const { tokens : { refresh_token } } = await oauth2Client.getToken(code);
-  console.log("refresh_token", refresh_token);
   if (!refresh_token) {
     throw new Error("Refresh token is null");
   }

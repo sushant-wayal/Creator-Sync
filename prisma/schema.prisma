@@ -59,6 +59,8 @@ model User {
   xLink                         String?
   skills                        String[]       @default([])
   readyToEdit                   Boolean        @default(false)
+  requestEdit                   RequestEdit[]
+  requestEditor                 RequestEditor[]
   rating                        Float          @default(0)
   createdProjects               Project[]      @relation("CreatorRelation")
   editedProjects                Project[]      @relation("EditorRelation")
@@ -112,6 +114,34 @@ model Instructions {
   updatedAt   DateTime          @updatedAt
 }
 
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model RequestEdit {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  editorId    String
+  editor      User     @relation(fields: [editorId], references: [id])
+  status      RequestStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RequestEditor {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  editorId    String
+  editor      User     @relation(fields: [editorId], references: [id])
+  status      RequestStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 enum ProjectType {
   VLOG
   SHORT_FILM
@@ -135,6 +165,8 @@ model Project {
   FileVersion  FileVersion[]      @relation("FileVersionRelation")
   ThumbnailVersion    ThumbnailVersion[] @relation("ThumbnailVersionRelation")
   Instructions Instructions[]     @relation("InstructionsRelation")
+  requests     RequestEdit[]      
+  requestEditors RequestEditor[]
   Chat         Chat[]         
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt

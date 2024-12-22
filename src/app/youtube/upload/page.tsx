@@ -17,7 +17,6 @@ export default function UploadPage() {
   useEffect(() => {
     const authenticate = async () => {
       const session = await auth();
-      console.log("session", session);
       if (session) {
         setProfilePicture(session.user.profilePicture);
       }
@@ -29,7 +28,6 @@ export default function UploadPage() {
   const getAuthUrl = async () => {
     const response = await fetch('/api/youtube/authenticate');
     const data = await response.json();
-    console.log("data", data);
     setAuthUrl(data.authUrl);
   };
   const [fileStates, setFileStates] = useState<FileState[]>([]);

@@ -26,18 +26,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         profilePicture: {},
       },
       authorize: async ({ usernameOrEmail, password, newUser, name, username, email, dob, gender, profilePicture }): Promise<User | null> => {
-        console.log("credentials")
-        console.log("usernameOrEmail", usernameOrEmail);
-        console.log("password", password);
-        console.log("newUser", newUser);
-        console.log("name", name);
-        console.log("username", username);
-        console.log("email", email);
-        console.log("dob", dob);
-        console.log("gender", gender);
-        console.log("profilePicture", profilePicture);
+        ("credentials")
         if (newUser == "true") {
-          console.log("new User", newUser);
           const hashedPassword = await hash(password as string, 10);
           const user = await db.user.create({
             data: {
@@ -50,10 +40,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               profilePicture: profilePicture as string,
             },
           });
-          console.log("User Created", user);
-          console.log("Sending Email");
           await axios.post(`${domain}/api/send-email`, { email: user.email, emailType: VERIFICATION_EMAIL });
-          console.log("Email Sent");
           return { ...user, profilePicture: user.profilePicture || '' };
         }
         const user = await db.user.findFirst({
@@ -102,7 +89,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           },
         });
         if (profile.email) {
-          console.log("Sending Email");
           await axios.post(`${domain}/api/send-email`, { email: profile.email, emailType: VERIFICATION_EMAIL });
         } else {
           throw new Error("Email is undefined");

@@ -9,6 +9,7 @@ import { Progress } from "@/Components/ui/progress";
 import Link from "next/link";
 import { getUser } from "@/actions/user";
 import { redirect } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 
 const DashboardPage = async () => {
   const session = await auth();
@@ -57,7 +58,7 @@ const DashboardPage = async () => {
   return (
     <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
       <UserNavbar/>
-      <div className="w-lvw p-8 space-y-8">
+      <div className="w-lvw p-8 flex-grow flex flex-col gap-8">
         <h1 className="text-3xl font-bold">Welcome Back, {name}!</h1>
         <div className="w-full grid grid-cols-4 gap-4">
           <div className="flex flex-col justify-between items-start border-[1px] border-gray-200 p-4 rounded-lg">
@@ -87,7 +88,7 @@ const DashboardPage = async () => {
                 {noOfDueProjectsThisWeek > 0 ?
                   `${noOfDueProjectsThisWeek} due this week`
                   :
-                  ""
+                  "No projects due this week"
                 }
               </p>
             </div>
@@ -127,21 +128,26 @@ const DashboardPage = async () => {
             </div>
           </div>
         </div>
-        <div className="w-full grid grid-cols-3 gap-4">
+        <div className="w-full grid grid-cols-3 gap-4 flex-grow">
+          {allProjects.length == 0 && (
+            <div className="w-[calc(100vw-64px)] h-full flex justify-center items-center">
+              <p className="text-gray-500 text-6xl">No projects found</p>
+            </div>
+          )}
           {allProjects.map(({ id, title, updatedAt, Instructions, completed }) => {
             const totalInstructions = Instructions.length;
             const completedInstructions = Instructions.filter(({ status }) => status == "COMPLETED").length;
             const progress = parseInt((((completedInstructions+1)/(totalInstructions+2))*100).toString());
             const status = completed ? "Completed" : completedInstructions == 0 ? "Just Started" : completedInstructions == totalInstructions ? "Final Review" : "In Progress";
-            const timeAgo = (new Date()).getTime() - updatedAt.getTime();
-            const lastUpdated = parseInt((timeAgo/(365*24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(365*24*60*60*100)).toString())} Years` : parseInt((timeAgo/(30*24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(30*24*60*60*100)).toString())} Months` : parseInt((timeAgo/(7*24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(7*24*60*60*100)).toString())} Weeks` : parseInt((timeAgo/(24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(24*60*60*100)).toString())} Days` : parseInt((timeAgo/(60*60*100)).toString()) > 0 ? `${ parseInt((timeAgo/(60*60*100)).toString())} Hours` : `${ parseInt((timeAgo/(60*100)).toString())} Minutes`
+            // const timeAgo = (new Date()).getTime() - updatedAt.getTime();
+            // const lastUpdated = parseInt((timeAgo/(365*24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(365*24*60*60*100)).toString())} Years` : parseInt((timeAgo/(30*24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(30*24*60*60*100)).toString())} Months` : parseInt((timeAgo/(7*24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(7*24*60*60*100)).toString())} Weeks` : parseInt((timeAgo/(24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(24*60*60*100)).toString())} Days` : parseInt((timeAgo/(60*60*100)).toString()) > 0 ? `${ parseInt((timeAgo/(60*60*100)).toString())} Hours` : `${ parseInt((timeAgo/(60*100)).toString())} Minutes`
             return (
               <Link href={`/project/${id}`}>
                 <Card>
                   <CardHeader>
                     <CardTitle className="font-bold">{title}</CardTitle>
                     <CardDescription>
-                      Last updated {lastUpdated} ago
+                      Last updated {formatDistanceToNow(updatedAt)} ago
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2">

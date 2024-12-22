@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { refreshToken } = await req.json();
-  console.log("refreshToken", refreshToken);
   oauth2Client.setCredentials({ refresh_token: refreshToken });
   const { credentials : { access_token } } = await oauth2Client.refreshAccessToken();
   oauth2Client.setCredentials({ access_token });

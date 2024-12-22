@@ -272,9 +272,7 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
+                        disabled={(date) => date <= new Date()}
                         initialFocus
                       />
                     </PopoverContent>
@@ -293,9 +291,9 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
                 Choose an editor for your project
               </CardDescription>
             </div>
-            <div className="flex flex-row items-center gap-2 border-[1px] rounded-lg px-1">
-              <Search className="w-5 h-5"/>
-              <Input  className="w-full border-0 py-0"
+            <div className="relative">
+              <Search className="w-5 h-5 absolute top-2 left-2"/>
+              <Input  className="w-full py-2 pl-9"
                 placeholder="Search Editors"
                 value={editorSearch}
                 onChange={(e) => setEditorSearch(e.target.value)}

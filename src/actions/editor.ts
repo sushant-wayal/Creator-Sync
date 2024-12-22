@@ -122,3 +122,52 @@ export const getSearchEditors = async (search: string): Promise<Editor[]> => {
     totalProjects: editor._count.editedProjects
   }));
 }
+
+export const getEditorsToRequest = async () => {
+  const session = await auth();
+  if (!session || !session.user) {
+    throw new Error("User not authenticated");
+  }
+  const { id } = session.user;
+  const editors = await db.user.findMany({
+    where: {
+      NOT: {
+        id,
+      },
+      readyToEdit: true
+    },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      profilePicture: true,
+      skills: true,
+      rating: true,
+      _count: {
+        select: {
+          editedProjects: {
+            where: {
+              completed: true
+            }
+          }
+        }
+      },
+      editedProjects: {
+        where: {
+          completed: false
+        },
+        select: {
+          deadline: true
+        },
+        orderBy: {
+          deadline: 'desc'
+        },
+        take: 1
+      }
+    },
+    orderBy: {
+      rating: 'desc'
+    }
+  });
+  return editors
+}
