@@ -72,7 +72,7 @@ const RequestsPage = async () => {
   return (
     <div className="w-lvw h-lvh flex flex-col gap-4 justify-between items-center">
       <UserNavbar/>
-      <Card className="w-4/5 flex flex-col gap-4 justify-start items-start border-none shadow-none">
+      <Card className="flex-grow w-4/5 flex flex-col gap-4 justify-start items-start border-none shadow-none">
         <CardHeader>
           <CardTitle>Project Requests</CardTitle>
           <CardDescription>

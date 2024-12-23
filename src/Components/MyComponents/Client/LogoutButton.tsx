@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 export const LogoutButton = () => {
   const router = useRouter();
   return (
-    <Button variant="outline" className="flex justify-center items-center gap-2 font-semibold hover:underline"
+    <Button variant="ghost" className="flex justify-center items-center gap-2 font-semibold hover:underline w-full"
       onClick={async () => {
         await signOut({
           redirectTo: "/signin"

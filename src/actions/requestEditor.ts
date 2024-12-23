@@ -100,3 +100,15 @@ export const rejectRequest = async (id: string) => {
     data: { status: "REJECTED" }
   });
 };
+
+export const totalUnreadRequests = async () => {
+  const session = await auth();
+  if (!session || !session.user) throw new Error("Not authenticated");
+  const editorId = session.user.id;
+  return db.requestEditor.count({
+    where: {
+      editorId,
+      status: "PENDING"
+    }
+  });
+};

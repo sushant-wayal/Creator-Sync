@@ -46,7 +46,12 @@ export const EditorRequests: React.FC<EditorRequestsProps> = ({ initialRequests 
     setRequests(requests.filter(request => request.id !== id));
   }
   return (
-    <CardContent className="w-full space-y-4">
+    <CardContent className="w-full space-y-4 flex-grow">
+      {requests.length === 0 && (
+        <div className="w-full h-[70%] flex justify-center items-center">
+          <p className="text-gray-500 text-7xl">No requests found</p>
+        </div>
+      )}
       {requests.map(request => (
         <div className="space-y-3 border-[1px] border-gray-200 p-4 rounded-lg">
           <div className="flex justify-between items-center">
