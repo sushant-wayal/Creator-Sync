@@ -177,9 +177,9 @@ export const getEditorsToRequest = async (projectId : string) => {
   return editors
 }
 
-export const rateEditor = async (editorId: string, rating: number) => {
+export const rateEditor = async (editorId: string, projectId: string, rating: number) => {
   const session = await auth();
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.id) {
     throw new Error("User not authenticated");
   }
   const editor = await db.user.findUnique({
@@ -202,4 +202,15 @@ export const rateEditor = async (editorId: string, rating: number) => {
       rating: updatedRating
     }
   });
+  await db.notification.create({
+    data: {
+      title: "Rating Received",
+      message: `You received a rating of ${rating} from a creator`,
+      type: "RATING",
+      senderProjectRole: "CREATOR",
+      projectId,
+      fromUserId: session.user.id,
+      toUserId: editorId
+    }
+  })
 }

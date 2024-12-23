@@ -18,6 +18,7 @@ export const uploadNewVersion = async (projectId: string, fileUrl: string, fileN
     },
     select: {
       editorId: true,
+      creatorId: true
     }
   });
   if (!project) {
@@ -49,4 +50,15 @@ export const uploadNewVersion = async (projectId: string, fileUrl: string, fileN
       version: newVersion
     }
   });
+  await db.notification.create({
+    data: {
+      title: "New version uploaded",
+      message: `Version ${newVersion} has been uploaded`,
+      type: "PROJECT_UPDATE",
+      senderProjectRole: "EDITOR",
+      projectId,
+      fromUserId: userId,
+      toUserId: project.creatorId,
+    }
+  })
 }

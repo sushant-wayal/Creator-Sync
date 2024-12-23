@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
     select: {
       title: true,
       description: true,
+      creatorId: true,
+      editorId: true,
       FileVersion: {
         orderBy: {
           version: 'desc',
@@ -38,6 +40,9 @@ export async function POST(req: NextRequest) {
       }
     },
   });
+  if (!project || !project.editorId) {
+    return NextResponse.error();
+  }
   const { title, description, FileVersion, ThumbnailVersion } = project || {};
   const videoUrl = FileVersion?.[0]?.url;
   const thumbnailUrl = ThumbnailVersion?.[0]?.url;
@@ -104,6 +109,17 @@ export async function POST(req: NextRequest) {
     where: { id: projectId },
     data: {
       completed: true,
+    },
+  });
+  await db.notification.create({
+    data: {
+      title: "Project Approved",
+      message: "Your project has been approved and uploaded to YouTube",
+      type: 'COMPLETED_PROJECT',
+      senderProjectRole: 'CREATOR',
+      projectId,
+      fromUserId: project.creatorId,
+      toUserId: project.editorId,
     },
   });
   return NextResponse.json({ data: youtubeResponse.data }, { status: 200 });

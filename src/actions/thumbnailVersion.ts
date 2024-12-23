@@ -13,6 +13,7 @@ export const uploadThumbnail = async (projectId: string, name: string, thumbnail
       id: projectId,
     },
     select: {
+      creatorId: true,
       _count: {
         select: {
           ThumbnailVersion: true,
@@ -30,6 +31,20 @@ export const uploadThumbnail = async (projectId: string, name: string, thumbnail
       name,
       url: thumbnailUrl,
       version
+    },
+  });
+  if (!session.user.id) {
+    throw new Error("User not found");
+  }
+  await db.notification.create({
+    data: {
+      title: "New Thumbnail uploaded",
+      message: `New Thumbnail uploaded for project`,
+      type: "PROJECT_UPDATE",
+      senderProjectRole: "EDITOR",
+      projectId,
+      fromUserId: session.user.id,
+      toUserId: project.creatorId,
     },
   });
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import { requestDeadlineExtension } from "@/actions/notification";
 import { extendDeadline } from "@/actions/project";
 import { Button } from "@/Components/ui/button";
 import { DialogFooter } from "@/Components/ui/dialog";
@@ -23,15 +24,15 @@ export const ExtendDeadlineForm : React.FC<ExtendDeadlineFormProps> = ({ project
     resolver: zodResolver(ExtendDeadlineFormSchema),
   });
   const onSubmit = async(values: z.infer<typeof ExtendDeadlineFormSchema>) => {
-    const toastId = toast.loading("Extending Deadline...")
+    const toastId = toast.loading(isCreator ? "Extending Deadline..." : "Requesting Deadline Extension...");
     try {
       const { days } = values;
       if (isCreator) await extendDeadline(projectId, Number(days));
-      // else await requestDeadlineExtension(projectId, days);
-      toast.success("Deadline Extended", { id: toastId });
+      else await requestDeadlineExtension(projectId, Number(days));
+      toast.success(isCreator ? "Deadline Extended" : "Requested Deadline Extension", { id: toastId });
       router.refresh();
     } catch (error : any) {
-      toast.error(`Error Extending Deadline : ${error.response.data.message || "Try Again"}`, { id: toastId })
+      toast.error(`Error ${isCreator ? "Extending Deadline" : "Requesting Deadline Extension"} : ${error.response.data.message || "Try Again"}`, { id: toastId })
     }
   }
   return (
@@ -66,7 +67,7 @@ export const ExtendDeadlineForm : React.FC<ExtendDeadlineFormProps> = ({ project
             className="w-full"
             disabled={form.formState.isSubmitting}
           >
-            Extend Deadline
+            {isCreator ? "Extend Deadline" : "Request Deadline Extension"}
           </Button>
         </DialogFooter>
       </form>

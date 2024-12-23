@@ -167,20 +167,50 @@ model Project {
   Instructions Instructions[]     @relation("InstructionsRelation")
   requests     RequestEdit[]      
   requestEditors RequestEditor[]
+  notifications Notification[]     @relation("ProjectNotificationRelation")
   Chat         Chat[]         
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 }
 
+enum NotificationType {
+  PROJECT_UPDATE
+  INSTRUCTION_UPDATE
+  DEADLINE_EXTENDED
+  REQUEST_DEADLINE_EXTENSION
+  REQUEST_EDIT
+  REQUEST_EDITOR
+  ACCEPT_REQUEST_EDIT
+  ACCEPT_REQUEST_EDITOR
+  COMPLETED_PROJECT
+  RATING
+  PAYMENT
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  YOUTUBE_REFRESH
+}
+
+enum UserProjectRole {
+  CREATOR
+  EDITOR
+  SYSTEM
+}
+
 model Notification {
-  id          String   @id @default(cuid())
-  message     String
-  fromUserId  String
-  from        User     @relation("NotificationFromRelation", fields: [fromUserId], references: [id])
-  toUserId    String
-  to          User     @relation("NotificationToRelation", fields: [toUserId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                String   @id @default(cuid())
+  title             String
+  message           String
+  type              NotificationType
+  senderProjectRole UserProjectRole
+  read              Boolean  @default(false)
+  projectId         String?
+  project           Project?  @relation("ProjectNotificationRelation", fields: [projectId], references: [id])
+  fromUserId        String?
+  from              User?     @relation("NotificationFromRelation", fields: [fromUserId], references: [id])
+  toUserId          String
+  to                User     @relation("NotificationToRelation", fields: [toUserId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 enum MessageFrom {

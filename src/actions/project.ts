@@ -56,6 +56,19 @@ export const createProject = async (data: CreateProjectInput) => {
       }
     }
   });
+  if (editorId) {
+    await db.notification.create({
+      data: {
+        title: "Request to edit project",
+        message: "You have a request to edit a project",
+        senderProjectRole: "CREATOR",
+        type: "REQUEST_EDITOR",
+        projectId: id,
+        fromUserId: creatorId,
+        toUserId: editorId
+      }
+    });
+  }
   return id;
 }
 
@@ -193,7 +206,8 @@ export const extendDeadline = async (projectId: string, days: number) => {
     },
     select: {
       creatorId: true,
-      deadline: true
+      deadline: true,
+      editorId: true
     }
   });
   if (!project) {
@@ -210,6 +224,19 @@ export const extendDeadline = async (projectId: string, days: number) => {
       deadline: new Date(new Date(project.deadline).getTime() + days * 24 * 60 * 60 * 1000)
     }
   });
+  if (project.editorId) {
+    await db.notification.create({
+      data: {
+        title: "Deadline Extended",
+        message: `The deadline for the project has been extended by ${days} days`,
+        type: "DEADLINE_EXTENDED",
+        senderProjectRole: "CREATOR",
+        projectId,
+        fromUserId: userId,
+        toUserId: project.editorId
+      }
+    });
+  }
 }
 
 export const getAllProjects = async () => {

@@ -87,4 +87,13 @@ export const updateYoutubeRefreshToken = async (id: string, refreshToken: string
       youtubeRefreshToken: refreshToken
     }
   });
+  await db.notification.create({
+    data: {
+      title: "YouTube account connected",
+      message: "Your YouTube account has been successfully connected",
+      type: "YOUTUBE_REFRESH",
+      senderProjectRole: "SYSTEM",
+      toUserId: id
+    }
+  });
 }

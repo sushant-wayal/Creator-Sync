@@ -78,7 +78,7 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
     resolver: zodResolver(NewProjectFormSchema)
   });
   const onSubmit = async (values: z.infer<typeof NewProjectFormSchema>) => {
-    toast.loading("Creating Project...");
+    const toastId = toast.loading("Creating Project...");
     try {
       const { title, description, projectType, duration, deadline } = values;
       const projectId = await createProject({
@@ -92,10 +92,10 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
               deadline,
               instructions: instructions.map(({ content, nature }) => ({ content, nature }))
             })
-      toast.success("Project Created Successfully");
+      toast.success("Project Created Successfully", { id: toastId });
       router.push(`/project/${projectId}`);
     } catch (err) {
-      toast.error("Failed to create project");
+      toast.error("Failed to create project", { id: toastId });
     }
   }
   return (

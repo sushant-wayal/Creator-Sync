@@ -11,6 +11,23 @@ export const requestEditor = async (projectId: string, editorId: string) => {
       editorId
     }
   });
+  const project = await db.project.findUnique({
+    where: { id: projectId },
+    select: { creatorId: true }
+  });
+  if (!project) throw new Error("Project not found");
+  const creatorId = project.creatorId;
+  await db.notification.create({
+    data: {
+      title: "Request to edit project",
+      message: "You have a request to edit a project",
+      senderProjectRole: "CREATOR",
+      type: "REQUEST_EDITOR",
+      projectId,
+      fromUserId: creatorId,
+      toUserId: editorId
+    }
+  });
 };
 
 export const getRequestEditors = async () => {
@@ -52,18 +69,29 @@ export const getRequestEditors = async () => {
           }
         }
       }
-    }
+    },
+    orderBy: { createdAt: "desc" }
   });
 };
 
 export const acceptRequest = async (id: string) => {
-  console.log("acceptRequest", id);
   const request = await db.requestEditor.update({
     where: { id },
-    data: { status: "ACCEPTED" }
+    data: { status: "ACCEPTED" },
+    include: { project: true }
   });
-  console.log("request", request);
-  await requestEdit(request.projectId);
+  await requestEdit(request.projectId, false);
+  await db.notification.create({
+    data: {
+      title: "Request accepted",
+      message: "Editor is ready to edit your project",
+      senderProjectRole: "EDITOR",
+      type: "ACCEPT_REQUEST_EDITOR",
+      projectId: request.projectId,
+      fromUserId: request.editorId,
+      toUserId: request.project.creatorId
+    }
+  });
 };
 
 export const rejectRequest = async (id: string) => {

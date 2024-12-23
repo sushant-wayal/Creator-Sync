@@ -17,7 +17,8 @@ export const requestRevision = async (projectId: string, content: string, nature
       id: projectId
     },
     select: {
-      creatorId: true
+      creatorId: true,
+      editorId: true
     }
   });
   if (!project) {
@@ -25,6 +26,9 @@ export const requestRevision = async (projectId: string, content: string, nature
   }
   if (project.creatorId != userId) {
     throw new Error("User not authorized");
+  }
+  if (project.editorId == null) {
+    throw new Error("Project editor not assigned");
   }
   await db.instructions.create({
     data: {
@@ -34,9 +38,20 @@ export const requestRevision = async (projectId: string, content: string, nature
       status: "PENDING"
     }
   });
+  await db.notification.create({
+    data: {
+      title: "New Instruction Request",
+      message: `You have a new instruction request : ${content}`,
+      type: "INSTRUCTION_UPDATE",
+      senderProjectRole: "CREATOR",
+      projectId,
+      fromUserId: userId,
+      toUserId: project.editorId,
+    }
+  });
 }
 
-export const completeInstruction = async (instructionIds: string[]) => {
+export const completeInstruction = async (instructionIds: string[], projectId : string) => {
   const session = await auth();
   if (!session || !session.user) {
     throw new Error("User not authenticated");
@@ -53,6 +68,25 @@ export const completeInstruction = async (instructionIds: string[]) => {
     },
     data: {
       status: "COMPLETED"
+    },
+  });
+  const project = await db.project.findFirst({
+    where: {
+      id: projectId
+    }});
+  if (!project) {
+    throw new Error("Project not found");
+  }
+  const toUserId = project.creatorId;
+  await db.notification.create({
+    data: {
+      title: "Instructions Completed",
+      message: `${instructionIds.length} instructions have been completed the instructions`,
+      type: "INSTRUCTION_UPDATE",
+      senderProjectRole: "EDITOR",
+      projectId,
+      fromUserId: userId,
+      toUserId,
     }
   });
 }

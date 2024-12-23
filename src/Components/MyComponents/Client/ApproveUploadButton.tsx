@@ -3,6 +3,7 @@
 import { Button } from "@/Components/ui/button";
 import { domain } from "@/constants";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -12,6 +13,7 @@ interface ApproveUploadButtonProps {
 }
 
 export const ApproveUploadButton : React.FC<ApproveUploadButtonProps> = ({ projectId, refreshToken }) => {
+  const router = useRouter();
   const [uploading, setUploading] = useState(false);
   return (
     <Button
@@ -24,6 +26,7 @@ export const ApproveUploadButton : React.FC<ApproveUploadButtonProps> = ({ proje
         })
         toast.success("Uploaded successfully", { id: toastId });
         setUploading(false);
+        router.refresh();
       }}
       disabled={uploading}
     >

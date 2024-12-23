@@ -54,7 +54,7 @@ const DashboardPage = async () => {
   }).length;
   const noOfActiveEditors = (new Set(user.createdProjects.filter(({ completed, editorId }) => !completed && editorId).map(({ editorId }) => editorId))).size;
   const noOfActiveCreators = (new Set(user.editedProjects.filter(({ completed, creatorId }) => !completed && creatorId).map(({ creatorId }) => creatorId))).size;
-  const allProjects = user.createdProjects.concat(user.editedProjects).sort((a, b) => a.updatedAt.getTime() - b.updatedAt.getTime());
+  const allProjects = user.createdProjects.concat(user.editedProjects).sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
   return (
     <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
       <UserNavbar/>

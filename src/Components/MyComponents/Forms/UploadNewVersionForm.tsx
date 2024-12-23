@@ -57,7 +57,7 @@ export const UploadNewVersionForm : React.FC<UploadNewVersionFormProps> = ({ pro
     const toastId = toast.loading("Uploading New Version...");
     try {
       await uploadNewVersion(projectId, fileUrl, fileName);
-      await completeInstruction(instructions.filter((_, ind) => instructionsStatues[ind] === "COMPLETED").map(({ id }) => id));
+      await completeInstruction(instructions.filter((_, ind) => instructionsStatues[ind] === "COMPLETED").map(({ id }) => id), projectId);
       toast.success("New Version Uploaded Successfully", { id: toastId });
       router.refresh();
     } catch (error : any) {

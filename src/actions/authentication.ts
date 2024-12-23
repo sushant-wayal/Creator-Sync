@@ -6,7 +6,7 @@ import { hash } from "bcryptjs";
 export const verifyEmail = async (email : string, token : string) => {
   const user = await db.user.findUnique({
     where: { email },
-    select: { emailVerificationToken: true, emailVerificationTokenExpires: true }
+    select: { id: true, emailVerificationToken: true, emailVerificationTokenExpires: true }
   });
   if (!user) {
     return { error: "User not found" };
@@ -25,13 +25,22 @@ export const verifyEmail = async (email : string, token : string) => {
       emailVerificationTokenExpires: new Date()
     }
   });
+  await db.notification.create({
+    data: {
+      title: "Email Verified",
+      message: "Your email has been verified successfully",
+      type: "EMAIL_VERIFICATION",
+      senderProjectRole: "SYSTEM",
+      toUserId: user.id
+    }
+  });
   return true;
 }
 
 export const resetPassword = async (email : string, password : string, token : string) => {
   const user = await db.user.findUnique({
     where: { email },
-    select: { passwordResetToken: true, passwordResetTokenExpires: true }
+    select: { id: true, passwordResetToken: true, passwordResetTokenExpires: true }
   });
   if (!user) {
     return { error: "User not found" };
@@ -49,6 +58,15 @@ export const resetPassword = async (email : string, password : string, token : s
     data: {
       password : hashedPassword,
       passwordResetTokenExpires: new Date()
+    }
+  });
+  await db.notification.create({
+    data: {
+      title: "Password Reset",
+      message: "Your password has been reset successfully",
+      type: "PASSWORD_RESET",
+      senderProjectRole: "SYSTEM",
+      toUserId: user.id
     }
   });
   return true;

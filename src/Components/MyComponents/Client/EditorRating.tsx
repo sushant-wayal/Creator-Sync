@@ -8,10 +8,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface EditorRatingProps {
+  projectId: string;
   editorId: string;
 }
 
-export const EditorRating : React.FC<EditorRatingProps> = ({ editorId }) => {
+export const EditorRating : React.FC<EditorRatingProps> = ({ editorId, projectId }) => {
   const router = useRouter();
   const [rating, setRating] = useState<number>(-1);
   const [hover, setHover] = useState<number>(0);
@@ -46,7 +47,7 @@ export const EditorRating : React.FC<EditorRatingProps> = ({ editorId }) => {
       <DialogFooter>
         <Button
           onClick={async () => {
-            await rateEditor(editorId, rating+1)
+            await rateEditor(editorId, projectId, rating+1)
             router.refresh()
           }}
           disabled={rating == -1}

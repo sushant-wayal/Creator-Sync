@@ -11,7 +11,7 @@ import { Button } from "@/Components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/Components/ui/dialog"
 import { Progress } from "@/Components/ui/progress"
-import { CheckCircle, Clock, Download, Edit, Eye, FileVideo, MessageSquare } from "lucide-react"
+import { CheckCircle, Clock, Download, Eye, FileVideo, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import Image from "next/image"
@@ -24,6 +24,7 @@ import { EditRequests } from "@/Components/MyComponents/Client/EditRequests"
 import { RequestEditorDialog } from "@/Components/MyComponents/Client/RequestEditorDialog"
 import { getEditorsToRequest } from "@/actions/editor"
 import { EditorRating } from "@/Components/MyComponents/Client/EditorRating"
+import { markAllOfProjectAsRead } from "@/actions/notification"
 
 interface ProjectPageProps {
   params: {
@@ -247,6 +248,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
   ];
   const allEditors = await getEditorsToRequest(id);
   // const allEditors = demoEditoraToRequest;
+  await markAllOfProjectAsRead(id);
   return (
     <div className="w-lvw h-lvh flex flex-col gap-4 justify-between items-center">
       <UserNavbar/>
@@ -274,7 +276,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                       <p className="text-gray-500">{editor._count.editedProjects} project{(editor._count.editedProjects || 0) > 1 ? 's' : ''} completed</p>
                     </div>
                   </div>
-                  <EditorRating editorId={editor.id}/>
+                  <EditorRating editorId={editor.id} projectId={id}/>
                 </DialogContent>
               </Dialog>
             )}
