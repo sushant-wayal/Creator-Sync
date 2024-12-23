@@ -45,11 +45,11 @@ export const getEditors = async (): Promise<Editor[]> => {
     const remainingEditors = await db.user.findMany({
       where: {
         NOT: {
-          id,
-          editedProjects: {
-            some: {
-              creatorId: id
-            }
+          id
+        },
+        editedProjects: {
+          none: {
+            creatorId: id
           }
         },
         readyToEdit: true
@@ -175,4 +175,31 @@ export const getEditorsToRequest = async (projectId : string) => {
     }
   });
   return editors
+}
+
+export const rateEditor = async (editorId: string, rating: number) => {
+  const session = await auth();
+  if (!session || !session.user) {
+    throw new Error("User not authenticated");
+  }
+  const editor = await db.user.findUnique({
+    where: {
+      id: editorId
+    },
+    select: {
+      rating: true
+    }
+  });
+  if (!editor) {
+    throw new Error("Editor not found");
+  }
+  const updatedRating = (editor.rating + rating) / (editor.rating ? 2 : 1);
+  await db.user.update({
+    where: {
+      id: editorId
+    },
+    data: {
+      rating: updatedRating
+    }
+  });
 }

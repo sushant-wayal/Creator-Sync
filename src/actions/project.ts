@@ -91,6 +91,15 @@ export const getProject = async (id: string) => {
           name: true,
           profilePicture: true,
           rating: true,
+          _count: {
+            select: {
+              editedProjects: {
+                where: {
+                  completed: true
+                }
+              }
+            }
+          }
         }
       },
       Instructions: {

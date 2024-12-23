@@ -11,7 +11,7 @@ import { Button } from "@/Components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/Components/ui/dialog"
 import { Progress } from "@/Components/ui/progress"
-import { CheckCircle, Clock, Download, Eye, FileVideo, MessageSquare } from "lucide-react"
+import { CheckCircle, Clock, Download, Edit, Eye, FileVideo, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import Image from "next/image"
@@ -23,6 +23,7 @@ import { RequestEditButton } from "@/Components/MyComponents/Client/RequestEditB
 import { EditRequests } from "@/Components/MyComponents/Client/EditRequests"
 import { RequestEditorDialog } from "@/Components/MyComponents/Client/RequestEditorDialog"
 import { getEditorsToRequest } from "@/actions/editor"
+import { EditorRating } from "@/Components/MyComponents/Client/EditorRating"
 
 interface ProjectPageProps {
   params: {
@@ -255,32 +256,55 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
             <CardTitle className="text-4xl">{title}</CardTitle>
             <CardDescription className="text-lg">{description}</CardDescription>
           </div>
-          {editor ? 
-            <Link href="/chat">
-              <Button className="flex justify-between items-center gap-3">
-                <MessageSquare size={24} />
-                <p>{isCreator ? "Chat with Editor" : "Chat with Creator"}</p>
-              </Button>
-            </Link>
-            :
-            !isCreator ? 
-              <RequestEditButton projectId={id}/>
-              :
+          <div className="flex flex-row gap-4 justify-center items-center">
+            {completed && editor && (
               <Dialog>
                 <DialogTrigger>
-                  <Button>Request Editor</Button>
+                  <Button variant="outline">Rate Editor</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Request an Editor</DialogTitle>
-                    <DialogDescription>
-                      Search and request an editor for your project : {title}
-                    </DialogDescription>
+                    <DialogTitle>Rate Your Editor</DialogTitle>
+                    <DialogDescription>Rate the editor for this project</DialogDescription>
                   </DialogHeader>
-                  <RequestEditorDialog projectId={id} allEditors={allEditors}/>
+                  <div className="w-full flex gap-4 justify-start items-start">
+                    <ProfilePicture url={editor.profilePicture} name={editor.name} />
+                    <div>
+                      <h3 className="text-2xl font-semibold">{editor?.name}</h3>
+                      <p className="text-gray-500">{editor._count.editedProjects} project{(editor._count.editedProjects || 0) > 1 ? 's' : ''} completed</p>
+                    </div>
+                  </div>
+                  <EditorRating editorId={editor.id}/>
                 </DialogContent>
               </Dialog>
-          }
+            )}
+            {editor ? 
+              <Link href="/chat">
+                <Button className="flex justify-between items-center gap-3">
+                  <MessageSquare size={24} />
+                  <p>{isCreator ? "Chat with Editor" : "Chat with Creator"}</p>
+                </Button>
+              </Link>
+              :
+              !isCreator ? 
+                <RequestEditButton projectId={id}/>
+                :
+                <Dialog>
+                  <DialogTrigger>
+                    <Button>Request Editor</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Request an Editor</DialogTitle>
+                      <DialogDescription>
+                        Search and request an editor for your project : {title}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <RequestEditorDialog projectId={id} allEditors={allEditors}/>
+                  </DialogContent>
+                </Dialog>
+            }
+          </div>
         </CardHeader>
         <CardContent className="w-full flex justify-between gap-5 items-start">
           <Card className="flex-grow">
