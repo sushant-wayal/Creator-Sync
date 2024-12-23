@@ -67,8 +67,8 @@ const demoRequests = [
 ];
 
 const RequestsPage = async () => {
-  // const requests = await getRequestEditors();
-  const requests = demoRequests;
+  const requests = await getRequestEditors();
+  // const requests = demoRequests;
   return (
     <div className="w-lvw h-lvh flex flex-col gap-4 justify-between items-center">
       <UserNavbar/>

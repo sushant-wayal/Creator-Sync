@@ -123,7 +123,7 @@ export const getSearchEditors = async (search: string): Promise<Editor[]> => {
   }));
 }
 
-export const getEditorsToRequest = async () => {
+export const getEditorsToRequest = async (projectId : string) => {
   const session = await auth();
   if (!session || !session.user) {
     throw new Error("User not authenticated");
@@ -134,7 +134,12 @@ export const getEditorsToRequest = async () => {
       NOT: {
         id,
       },
-      readyToEdit: true
+      readyToEdit: true,
+      requestEditor: {
+        none: {
+          projectId
+        }
+      }
     },
     select: {
       id: true,

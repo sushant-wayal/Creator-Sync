@@ -188,13 +188,13 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
       }
     ]
   }
-  // const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests } = await getProject(id);
-  const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests } = demoProject;
+  const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests } = await getProject(id);
+  // const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests } = demoProject;
   // if (editor && session.user.id != creator.id && session.user.id != editor.id) throw new Error("You are not authorized to view this project");
   const totalInstructions = Instructions.length;
   const completedInstructions = Instructions.filter((instruction) => instruction.status === "COMPLETED").length;
   const status = completed ? "Completed" : completedInstructions === 0 ? "Just Started" : completedInstructions === totalInstructions ? "Final Review" : "In Progress";
-  const progress = ((completedInstructions + 1) / (totalInstructions + 2)) * 100;
+  const progress = completed ? 100 : ((completedInstructions + 1) / (totalInstructions + 2)) * 100;
   const user = await db.user.findUnique({
     where: { id: session.user.id },
     select: {
@@ -244,8 +244,8 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
       _count: { editedProjects: 4 }
     }
   ];
-  // const allEditors = await getEditorsToRequest();
-  const allEditors = demoEditoraToRequest;
+  const allEditors = await getEditorsToRequest(id);
+  // const allEditors = demoEditoraToRequest;
   return (
     <div className="w-lvw h-lvh flex flex-col gap-4 justify-between items-center">
       <UserNavbar/>
@@ -292,7 +292,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                 <div className="w-full grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
                     <p className="font-semibold">Project Type</p>
-                    <p className="text-gray-600">{type}</p>
+                    <p className="text-gray-600">{type.split('_').map(a => a.slice(0,1)+a.slice(1).toLowerCase()).join(' ')}</p>
                   </div>
                   <div className="flex flex-col gap-1">
                     <p className="font-semibold">Status</p>
@@ -300,7 +300,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                   </div>
                   <div className="flex flex-col gap-1">
                     <p className="font-semibold">Duration</p>
-                    <p className="text-gray-600">{duration}</p>
+                    <p className="text-gray-600">{duration} minutes</p>
                   </div>
                   <div className="flex flex-col gap-1">
                     <p className="font-semibold">Deadline</p>
@@ -384,91 +384,95 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                 </div>
               </CardContent>
             </Card>}
-            <Card className="w-full">
+            {((editor && !isCreator) || (editor && isCreator && ThumbnailVersion.length > 0)) && <Card className="w-full">
               <CardHeader>
                 <CardTitle>Thumbnail</CardTitle>
                 <CardDescription>Current Thumbnail and version history</CardDescription>
               </CardHeader>
               <CardContent className="w-full flex flex-col gap-2 justify-start relative">
-                <Dialog>
-                  <DialogTrigger>
-                    <Eye className="cursor-pointer ml-4 absolute top-3 right-7 bg-white p-px" size={24} />
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        {ThumbnailVersion[0].name} - v{ThumbnailVersion[0].version}
-                      </DialogTitle>
-                      <DialogDescription>
-                        Uploaded on : {createdAt.toLocaleDateString()}
-                      </DialogDescription>
-                      <Image src={ThumbnailVersion[0].url} alt={ThumbnailVersion[0].name} height={400} width={400} className="w-full h-auto object-cover rounded" />
-                    </DialogHeader>
-                  </DialogContent>
-                </Dialog>
-                <Image
-                  src={ThumbnailVersion[0].url}
-                  alt={ThumbnailVersion[0].name}
-                  height={192}
-                  width={208}
-                  className="w-full h-48 object-cover rounded"
-                />
-                <div className="w-full flex flex-row justify-between items-center">
-                  <p className="text-gray-600">
-                    Last Updated: {ThumbnailVersion[0].createdAt.toLocaleDateString()}
-                  </p>
-                  <Dialog>
-                    <DialogTrigger>
-                      <Button variant="outline" className="w-fit">
-                        View History
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="w-full flex flex-col gap-2 justify-start items-start">
-                      <DialogHeader>
-                        <DialogTitle>Thumbnail Version History</DialogTitle>
-                        <DialogDescription>View the history of the thumbnail versions</DialogDescription>
-                      </DialogHeader>
-                      {ThumbnailVersion.map(({ id, url, name, version, createdAt }) => (
-                        <div key={id} className="w-full flex flex-row justify-between items-center rounded bg-gray-300 p-2">
-                          <div className="flex justify-start items-center gap-2">
-                            <Image src={url} alt={name} height={24} width={24} className="rounded" />
-                            <p>{name}</p>
-                          </div>
-                          <div className="flex justify-start items-center gap-4">
-                            <Badge variant="secondary" className="w-fit font-bold">v{version}</Badge>
-                            <p className="text-gray-600 text-xs">Uploaded on : {createdAt.toLocaleDateString()}</p>
-                            <Link href={url} className="cursor-pointer">
-                              <Download size={18} />
-                            </Link>
-                            <Dialog>
-                              <DialogTrigger>
-                                <HoverCard>
-                                  <HoverCardTrigger>
-                                    <Eye className="cursor-pointer ml-4" size={18} />
-                                  </HoverCardTrigger>
-                                  <HoverCardContent>
-                                    <Image src={url} alt={name} height={400} width={400} className="w-full h-auto object-cover rounded" />
-                                  </HoverCardContent>
-                                </HoverCard>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>
-                                    {name} - v{version}
-                                  </DialogTitle>
-                                  <DialogDescription>
-                                    Uploaded on : {createdAt.toLocaleDateString()}
-                                  </DialogDescription>
-                                  <Image src={url} alt={name} height={400} width={400} className="w-full h-auto object-cover rounded" />
-                                </DialogHeader>
-                              </DialogContent>
-                            </Dialog>
-                          </div>
-                        </div>
-                      ))}
-                    </DialogContent>
-                  </Dialog>
-                </div>
+                {ThumbnailVersion.length > 0 && (
+                  <>
+                    <Dialog>
+                      <DialogTrigger>
+                        <Eye className="cursor-pointer ml-4 absolute top-3 right-7 bg-white p-px" size={24} />
+                      </DialogTrigger>
+                      <DialogContent className="max-h-[90%]">
+                        <DialogHeader>
+                          <DialogTitle>
+                            {ThumbnailVersion[0].name} - v{ThumbnailVersion[0].version}
+                          </DialogTitle>
+                          <DialogDescription>
+                            Uploaded on : {createdAt.toLocaleDateString()}
+                          </DialogDescription>
+                          <Image src={ThumbnailVersion[0].url} alt={ThumbnailVersion[0].name} height={400} width={400} className="w-full h-[70%] object-cover rounded" />
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                    <Image
+                      src={ThumbnailVersion[0].url}
+                      alt={ThumbnailVersion[0].name}
+                      height={192}
+                      width={208}
+                      className="w-full h-48 object-cover rounded"
+                    />
+                    <div className="w-full flex flex-row justify-between items-center">
+                      <p className="text-gray-600">
+                        Last Updated: {ThumbnailVersion[0].createdAt.toLocaleDateString()}
+                      </p>
+                      <Dialog>
+                        <DialogTrigger>
+                          <Button variant="outline" className="w-fit">
+                            View History
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="w-full flex flex-col gap-2 justify-start items-start">
+                          <DialogHeader>
+                            <DialogTitle>Thumbnail Version History</DialogTitle>
+                            <DialogDescription>View the history of the thumbnail versions</DialogDescription>
+                          </DialogHeader>
+                          {ThumbnailVersion.map(({ id, url, name, version, createdAt }) => (
+                            <div key={id} className="w-full flex flex-row justify-between items-center rounded bg-gray-300 p-2">
+                              <div className="flex justify-start items-center gap-2">
+                                <Image src={url} alt={name} height={24} width={24} className="rounded" />
+                                <p>{name}</p>
+                              </div>
+                              <div className="flex justify-start items-center gap-4">
+                                <Badge variant="secondary" className="w-fit font-bold">v{version}</Badge>
+                                <p className="text-gray-600 text-xs">Uploaded on : {createdAt.toLocaleDateString()}</p>
+                                <Link href={url} className="cursor-pointer">
+                                  <Download size={18} />
+                                </Link>
+                                <Dialog>
+                                  <DialogTrigger>
+                                    <HoverCard>
+                                      <HoverCardTrigger>
+                                        <Eye className="cursor-pointer ml-4" size={18} />
+                                      </HoverCardTrigger>
+                                      <HoverCardContent>
+                                        <Image src={url} alt={name} height={400} width={400} className="w-full h-auto object-cover rounded" />
+                                      </HoverCardContent>
+                                    </HoverCard>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-h-[90%]">
+                                    <DialogHeader>
+                                      <DialogTitle>
+                                        {name} - v{version}
+                                      </DialogTitle>
+                                      <DialogDescription>
+                                        Uploaded on : {createdAt.toLocaleDateString()}
+                                      </DialogDescription>
+                                      <Image src={url} alt={name} height={400} width={400} className="w-full h-[70%] object-cover rounded" />
+                                    </DialogHeader>
+                                  </DialogContent>
+                                </Dialog>
+                              </div>
+                            </div>
+                          ))}
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </>
+                )}
                 {!isCreator && (
                   <>
                     <hr className="w-full border-t border-gray-200 my-3" />
@@ -476,8 +480,8 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                   </>
                 )}
               </CardContent>
-            </Card>
-            <Card className="w-full">
+            </Card>}
+            {(editor || (!editor && isCreator)) && <Card className="w-full">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
@@ -505,7 +509,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                       :
                       <UploadNewVersionForm
                         projectId={id}
-                        instructions={Instructions.filter(({ status }) => status === "PENDING").map(({ id, content, nature }) => ({ id, content, nature }))}
+                        instructions={Instructions.filter(({ status }) => status == "PENDING").map(({ id, content, nature }) => ({ id, content, nature }))}
                       />
                     }
                   </DialogContent>
@@ -529,7 +533,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                   </DialogContent>
                 </Dialog>
               </CardContent>
-            </Card>
+            </Card>}
             <Card className="w-full">
               <CardHeader>
                 <CardTitle>Project Timeline</CardTitle>
@@ -559,13 +563,13 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
         </CardContent>
         <CardFooter></CardFooter>
       </Card>
-      <Card className="w-4/5 mx-auto">
+      {isCreator && !editor && <Card className="w-4/5 mx-auto">
         <CardHeader>
           <CardTitle>Editor Requests</CardTitle>
           <CardDescription>{requests.length} editor{requests.length > 1 ? "s" : ""} requested to edit this project</CardDescription>
         </CardHeader>
         <EditRequests initialRequests={requests}/>
-      </Card>
+      </Card>}
       <Footer />
     </div>
   )

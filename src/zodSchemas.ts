@@ -70,7 +70,7 @@ export const NewProjectFormSchema = z.object({
   projectType: z.enum(["VLOG", "SHORT_FILM", "COMMERCIAL", "MUSIC_VIDEO", "DOCUMENTARY"], {
     message: "Invalid Project Type"
   }),
-  duration: z.number().int().min(1, {
+  duration: z.string().min(1, {
     message: "Duration is Required"
   }),
   deadline: z.date({
@@ -81,19 +81,17 @@ export const NewProjectFormSchema = z.object({
 export const RequestRevisionFormSchema = z.object({
   content: z.string().min(1, {
     message: "Content is Required"
-  }),
-  nature: z.enum(["COMPULSORY", "OPTIONAL"], {
-    message: "Invalid Nature"
   })
 })
 
 export const ExtendDeadlineFormSchema = z.object({
-  days: z.number().int().min(1, {
+  days: z.string().min(1, {
     message: "Days is Required"
   })
 })
 
 export const EditProfileFormSchema = z.object({
+  readyToEdit: z.boolean(),
   name: z.string().min(1, {
     message: "Name is Required"
   }),

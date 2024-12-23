@@ -1,3 +1,5 @@
+"use server";
+
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 
@@ -6,15 +8,22 @@ export const uploadThumbnail = async (projectId: string, name: string, thumbnail
   if (!session || !session.user) {
     throw new Error("Not authenticated");
   }
-  const maxVersion = await db.thumbnailVersion.aggregate({
-    _max: {
-      version: true,
-    },
+  const project = await db.project.findFirst({
     where: {
-      projectId,
+      id: projectId,
     },
-  })
-  const version = (maxVersion?._max?.version || -1) + 1;
+    select: {
+      _count: {
+        select: {
+          ThumbnailVersion: true,
+        },
+      }
+    }
+  });
+  if (!project) {
+    throw new Error("Project not found");
+  }
+  const version = project._count.ThumbnailVersion;
   await db.thumbnailVersion.create({
     data: {
       projectId,

@@ -143,8 +143,8 @@ const ExplorePage = async () => {
     throw new Error("User not found");
   }
   const { readyToEdit } = user;
-  // const initialProjects = await getAllProjects();
-  const initialProjects = demoInitialProjects;
+  const initialProjects = await getAllProjects();
+  // const initialProjects = demoInitialProjects;
   return (
     <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
       <UserNavbar/>

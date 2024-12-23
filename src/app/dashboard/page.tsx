@@ -52,8 +52,8 @@ const DashboardPage = async () => {
     lastMonth.setMonth(lastMonth.getMonth() - 1);
     return (new Date(project.updatedAt) > lastMonth) && project.completed;
   }).length;
-  const noOfActiveEditors = (new Set(user.createdProjects.filter(({ completed }) => !completed).map(({ editorId }) => editorId))).size;
-  const noOfActiveCreators = (new Set(user.editedProjects.filter(({ completed }) => !completed).map(({ creatorId }) => creatorId))).size;
+  const noOfActiveEditors = (new Set(user.createdProjects.filter(({ completed, editorId }) => !completed && editorId).map(({ editorId }) => editorId))).size;
+  const noOfActiveCreators = (new Set(user.editedProjects.filter(({ completed, creatorId }) => !completed && creatorId).map(({ creatorId }) => creatorId))).size;
   const allProjects = user.createdProjects.concat(user.editedProjects).sort((a, b) => a.updatedAt.getTime() - b.updatedAt.getTime());
   return (
     <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
@@ -137,7 +137,7 @@ const DashboardPage = async () => {
           {allProjects.map(({ id, title, updatedAt, Instructions, completed }) => {
             const totalInstructions = Instructions.length;
             const completedInstructions = Instructions.filter(({ status }) => status == "COMPLETED").length;
-            const progress = parseInt((((completedInstructions+1)/(totalInstructions+2))*100).toString());
+            const progress = completed ? 100 : parseInt((((completedInstructions+1)/(totalInstructions+2))*100).toString());
             const status = completed ? "Completed" : completedInstructions == 0 ? "Just Started" : completedInstructions == totalInstructions ? "Final Review" : "In Progress";
             // const timeAgo = (new Date()).getTime() - updatedAt.getTime();
             // const lastUpdated = parseInt((timeAgo/(365*24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(365*24*60*60*100)).toString())} Years` : parseInt((timeAgo/(30*24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(30*24*60*60*100)).toString())} Months` : parseInt((timeAgo/(7*24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(7*24*60*60*100)).toString())} Weeks` : parseInt((timeAgo/(24*60*60*100)).toString()) > 0 ? `${parseInt((timeAgo/(24*60*60*100)).toString())} Days` : parseInt((timeAgo/(60*60*100)).toString()) > 0 ? `${ parseInt((timeAgo/(60*60*100)).toString())} Hours` : `${ parseInt((timeAgo/(60*100)).toString())} Minutes`

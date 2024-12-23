@@ -17,7 +17,7 @@ interface EditRequestsProps {
     editor: {
       id: string;
       name: string;
-      profilePicture: string;
+      profilePicture: string | null;
       rating: number;
       skills: string[];
       _count: {

@@ -9,6 +9,7 @@ import { Label } from "@/Components/ui/label";
 import { Switch } from "@/Components/ui/switch";
 import { RequestRevisionFormSchema } from "@/zodSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -19,6 +20,7 @@ interface RequestRevisionFormProps {
 }
 
 export const RequestrevisionForm : React.FC<RequestRevisionFormProps> = ({ projectId }) => {
+  const router = useRouter();
   const [nature, setNature] = useState<"COMPULSORY" | "OPTIONAL">("COMPULSORY");
   const form = useForm<z.infer<typeof RequestRevisionFormSchema>>({
     resolver: zodResolver(RequestRevisionFormSchema),
@@ -29,6 +31,7 @@ export const RequestrevisionForm : React.FC<RequestRevisionFormProps> = ({ proje
       const { content } = values;
       await requestRevision(projectId, content, nature);
       toast.success("Revision Requested Successfully", { id: toastId });
+      router.refresh();
     } catch (error : any) {
       toast.error(`Error Requesting Revision. Try Again`, { id: toastId })
     }

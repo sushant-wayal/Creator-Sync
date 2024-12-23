@@ -13,6 +13,7 @@ import { acceptRequest, rejectRequest } from "@/actions/requestEditor";
 
 interface EditorRequestsProps {
   initialRequests: {
+    id: string;
     project: {
       title: string;
       id: string;
@@ -36,12 +37,13 @@ interface EditorRequestsProps {
 export const EditorRequests: React.FC<EditorRequestsProps> = ({ initialRequests }) => {
   const [requests, setRequests] = useState(initialRequests);
   const handleAccept = async (id: string) => {
+    console.log("acceptRequest", id);
     await acceptRequest(id);
-    setRequests(requests.filter(request => request.project.id !== id));
+    setRequests(requests.filter(request => request.id !== id));
   }
   const handleReject = async (id: string) => {
     await rejectRequest(id);
-    setRequests(requests.filter(request => request.project.id !== id));
+    setRequests(requests.filter(request => request.id !== id));
   }
   return (
     <CardContent className="w-full space-y-4">
@@ -51,7 +53,7 @@ export const EditorRequests: React.FC<EditorRequestsProps> = ({ initialRequests 
             <div className="space-y-1">
               <h3 className="text-lg font-semibold">{request.project.title}</h3>
               <div className="flex justify-start gap-2 items-center">
-                <Badge variant="outline" className="text-[10px] font-bold">{request.project.type}</Badge>
+                <Badge variant="outline" className="text-[10px] font-bold">{request.project.type.split('_').map(a => a.slice(0,1)+a.slice(1).toLowerCase()).join(' ')}</Badge>
                 <p className="text-gray-500">.</p>
                 <p className="text-gray-500 text-sm">{request.project.duration} minutes</p>
               </div>
@@ -87,13 +89,13 @@ export const EditorRequests: React.FC<EditorRequestsProps> = ({ initialRequests 
             </div>
             <div className="flex gap-2 justify-center items-center">
               <Button className="text-sm flex items-center justify-center gap-1" variant="default"
-                onClick={() => handleAccept(request.project.id)}
+                onClick={async () => await handleAccept(request.id)}
               >
                 <CheckCircle size={16} color="white"/>
                 <p>Accept</p>
               </Button>
               <Button className="text-sm flex items-center justify-center gap-1" variant="destructive"
-                onClick={() => handleReject(request.project.id)}
+                onClick={async () => await handleReject(request.id)}
               >
                 <X size={16} color="white"/>
                 <p>Reject</p>

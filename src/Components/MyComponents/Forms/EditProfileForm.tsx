@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { SingleImageUpload } from "../General/SingleImageUpload";
+import { Switch } from "@/Components/ui/switch";
 
 interface EditProfileFormProps {
   user: {
@@ -30,6 +31,7 @@ interface EditProfileFormProps {
     xLink: string | null;
     instagramLink: string | null;
     skills: string[];
+    readyToEdit: boolean;
   };
 }
 
@@ -44,7 +46,8 @@ export const EditProfileForm : React.FC<EditProfileFormProps> = ({ user : {
   youtubeLink,
   xLink,
   instagramLink,
-  skills
+  skills,
+  readyToEdit
 } }) => {
   const router = useRouter();
   const [userSkills, setUserSkills] = useState<string[]>(skills);
@@ -61,13 +64,14 @@ export const EditProfileForm : React.FC<EditProfileFormProps> = ({ user : {
       youtubeLink,
       xLink,
       instagramLink,
-      skills
+      skills,
+      readyToEdit
     }
   });
   const onSubmit = async (values: z.infer<typeof EditProfileFormSchema>) => {
     const toastId = toast.loading("Saving Changes...");
     try {
-      const { name, username, bio, location, email, website, youtubeLink, xLink, instagramLink } = values;
+      const { name, username, bio, location, email, website, youtubeLink, xLink, instagramLink, readyToEdit } = values;
       await updateUser(username, {
         profilePicture: userProfilePicture,
         name,
@@ -79,7 +83,8 @@ export const EditProfileForm : React.FC<EditProfileFormProps> = ({ user : {
         youtubeLink,
         xLink,
         instagramLink,
-        skills: userSkills
+        skills: userSkills,
+        readyToEdit
       });
       toast.success("Profile Updated", { id: toastId });
       router.push(`/profile/${username}`);
@@ -95,6 +100,24 @@ export const EditProfileForm : React.FC<EditProfileFormProps> = ({ user : {
       >
         <CardContent className="space-y-4">
           <SingleImageUpload setUrl={setUserProfilePicture} buttonText="Upload Profile Picture"/>
+          <FormField
+            control={form.control}
+            name="readyToEdit"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-end gap-4 flex-row-reverse">
+                <FormLabel>
+                  Ready To Edit
+                </FormLabel>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage/>
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="name"

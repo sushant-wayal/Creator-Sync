@@ -25,6 +25,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "@/Components/ui/calendar";
+import { useRouter } from "next/navigation";
 
 interface NewProjectFormProps {
   initialEditors: Editor[];
@@ -36,6 +37,7 @@ interface Instructions {
 }
 
 export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors }) => {
+  const router = useRouter();
   const projectTypes = [
     { value: "VLOG", label: "Vlog" },
     { value: "SHORT_FILM", label: "Short Film" },
@@ -79,18 +81,19 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
     toast.loading("Creating Project...");
     try {
       const { title, description, projectType, duration, deadline } = values;
-      await createProject({
+      const projectId = await createProject({
               title,
               description,
               type: projectType,
               editorId: selectedEditorId,
               fileUrl,
               fileName,
-              duration,
+              duration : Number(duration),
               deadline,
               instructions: instructions.map(({ content, nature }) => ({ content, nature }))
             })
       toast.success("Project Created Successfully");
+      router.push(`/project/${projectId}`);
     } catch (err) {
       toast.error("Failed to create project");
     }

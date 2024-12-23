@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/Components/ui/input";
 import { ExtendDeadlineFormSchema } from "@/zodSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -17,6 +18,7 @@ interface ExtendDeadlineFormProps {
 }
 
 export const ExtendDeadlineForm : React.FC<ExtendDeadlineFormProps> = ({ projectId, isCreator }) => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof ExtendDeadlineFormSchema>>({
     resolver: zodResolver(ExtendDeadlineFormSchema),
   });
@@ -24,9 +26,10 @@ export const ExtendDeadlineForm : React.FC<ExtendDeadlineFormProps> = ({ project
     const toastId = toast.loading("Extending Deadline...")
     try {
       const { days } = values;
-      if (isCreator) await extendDeadline(projectId, days);
+      if (isCreator) await extendDeadline(projectId, Number(days));
       // else await requestDeadlineExtension(projectId, days);
       toast.success("Deadline Extended", { id: toastId });
+      router.refresh();
     } catch (error : any) {
       toast.error(`Error Extending Deadline : ${error.response.data.message || "Try Again"}`, { id: toastId })
     }

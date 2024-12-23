@@ -1,3 +1,5 @@
+"use server";
+
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { requestEdit } from "./requestEdit";
@@ -26,6 +28,7 @@ export const getRequestEditors = async () => {
       status: "PENDING"
     },
     select: {
+      id: true,
       status: true,
       createdAt: true,
       project: {
@@ -54,10 +57,12 @@ export const getRequestEditors = async () => {
 };
 
 export const acceptRequest = async (id: string) => {
+  console.log("acceptRequest", id);
   const request = await db.requestEditor.update({
     where: { id },
     data: { status: "ACCEPTED" }
   });
+  console.log("request", request);
   await requestEdit(request.projectId);
 };
 

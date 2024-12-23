@@ -296,7 +296,7 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
     throw new Error("User not authenticated");
   }
   // const { username } = params;
-  const username = await decodeURIComponent(params.username);
+  const username = decodeURIComponent(await params.username);
   const activeUser = username === session.user.username;
   const user = await getUser(username);
   if (!user) {
@@ -317,7 +317,7 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
   // const user = demoUser;
   const noOfCompletedProjects = user.createdProjects.filter(({ completed }) => completed).length + user.editedProjects.filter(({ completed }) => completed).length;
   const noOfActiveProjects = user.createdProjects.filter(({ completed }) => !completed).length + user.editedProjects.filter(({ completed }) => !completed).length;
-  const noOfCollaborations = (new Set([...user.createdProjects.map(({ editorId }) => editorId), ...user.editedProjects.map(({ creatorId }) => creatorId)])).size;
+  const noOfCollaborations = (new Set([...user.createdProjects.filter(({ editorId }) => editorId).map(({ editorId }) => editorId), ...user.editedProjects.filter(({ creatorId }) => creatorId).map(({ creatorId }) => creatorId)])).size;
   const createdProjectStatuses = user.createdProjects.map(({ Instructions, completed }) => {
     const completedInstructions = Instructions.filter(({ status }) => status === "COMPLETED").length;
     const totalInstructions = Instructions.length;
@@ -455,7 +455,7 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
           }
           <div className="w-full rounded-xl border-[1px] border-gray-300 p-8">
             <p className="text-2xl font-bold text-black mb-5">Statistics</p>
-            <div className="w-full grid grid-cols-4 gap-4">
+            <div className={`w-full grid gap-4 ${user.readyToEdit ? "grid-cols-4" : "grid-cols-3"}`}>
               <div className="flex flex-col justify-center items-start gap-2">
                 <h3 className="text-3xl font-bold text-black">{noOfCompletedProjects}</h3>
                 <h4 className="text-sm text-gray-500">Projects Completed</h4>
@@ -468,10 +468,10 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
                 <h3 className="text-3xl font-bold text-black">{noOfCollaborations}</h3>
                 <h4 className="text-sm text-gray-500">Collaborations</h4>
               </div>
-              <div className="flex flex-col justify-center items-start gap-2">
+              {user.readyToEdit && <div className="flex flex-col justify-center items-start gap-2">
                 <h3 className="text-3xl font-bold text-black">{user.rating}</h3>
                 <h4 className="text-sm text-gray-500">Average Rating</h4>
-              </div>
+              </div>}
             </div>
           </div>
           <div className="w-full rounded-xl border-[1px] border-gray-300 p-8">
@@ -497,7 +497,7 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
                       <FileVideo color="black" size={32} />
                       <div className="flex flex-col justify-center items-start gap-px">
                         <p className="text-lg font-semibold text-black">{title}</p>
-                        <p className="text-sm font-light text-gray-500">{type}</p>
+                        <p className="text-sm font-light text-gray-500">{type.split('_').map(a => a.slice(0,1)+a.slice(1).toLowerCase()).join(' ')}</p>
                       </div>
                     </div>
                     <div className="flex justify-center items-center gap-2">
@@ -514,7 +514,7 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
                       <FileVideo color="black" size={32} />
                       <div className="flex flex-col justify-center items-start gap-px">
                         <p className="text-lg font-semibold text-black">{title}</p>
-                        <p className="text-sm font-light text-gray-500">{type}</p>
+                        <p className="text-sm font-light text-gray-500">{type.split('_').map(a => a.slice(0,1)+a.slice(1).toLowerCase()).join(' ')}</p>
                       </div>
                     </div>
                     <div className="flex justify-center items-center gap-2">

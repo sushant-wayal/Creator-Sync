@@ -28,7 +28,7 @@ export const createProject = async (data: CreateProjectInput) => {
     throw new Error("Creator ID is undefined");
   }
   const { title, description, type, editorId , fileUrl, instructions, duration, deadline, fileName } = data;
-  await db.project.create({
+  const { id } = await db.project.create({
     data: {
       title,
       description,
@@ -56,6 +56,7 @@ export const createProject = async (data: CreateProjectInput) => {
       }
     }
   });
+  return id;
 }
 
 export const getProject = async (id: string) => {
@@ -159,7 +160,7 @@ export const getProject = async (id: string) => {
   if (!project) {
     throw new Error("Project not found");
   }
-  if (project.editorId && (project.creator.id != userId || project.editorId != userId)) {
+  if (project.editorId && (project.creator.id != userId && project.editorId != userId)) {
     throw new Error("User not authorized");
   }
   return {

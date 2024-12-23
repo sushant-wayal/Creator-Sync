@@ -11,6 +11,7 @@ import { Label } from "@/Components/ui/label";
 import { FileState, MultiFileDropzone } from "@/Components/ui/multi-file-dropzone";
 import { useEdgeStore } from "@/lib/edgestore";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -24,6 +25,7 @@ interface UploadNewVersionFormProps {
 }
 
 export const UploadNewVersionForm : React.FC<UploadNewVersionFormProps> = ({ projectId, instructions }) => {
+  const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [fileStates, setFileStates] = useState<FileState[]>([]);
   const [fileUrl, setFileUrl] = useState<string>("");
@@ -57,6 +59,7 @@ export const UploadNewVersionForm : React.FC<UploadNewVersionFormProps> = ({ pro
       await uploadNewVersion(projectId, fileUrl, fileName);
       await completeInstruction(instructions.filter((_, ind) => instructionsStatues[ind] === "COMPLETED").map(({ id }) => id));
       toast.success("New Version Uploaded Successfully", { id: toastId });
+      router.refresh();
     } catch (error : any) {
       toast.error(`Error Uploading New Version. Try Again`, { id: toastId });
     }
@@ -108,7 +111,7 @@ export const UploadNewVersionForm : React.FC<UploadNewVersionFormProps> = ({ pro
             />
           </CardContent>
         </Card>
-        <Card className={`w-full border-gray-400 hidden ${instructions.length == 0 ? "hidden" : ""}`}>
+        <Card className={`w-full border-gray-400 ${instructions.length == 0 ? "hidden" : ""}`}>
           <CardHeader>
             <CardTitle>Pending Instructions</CardTitle>
             <CardDescription>
