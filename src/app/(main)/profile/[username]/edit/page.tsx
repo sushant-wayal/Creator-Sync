@@ -1,15 +1,22 @@
 import { getUser } from "@/actions/user";
 import { auth } from "@/auth";
 import { EditProfileForm } from "@/Components/MyComponents/Forms/EditProfileForm";
-import { Footer } from "@/Components/MyComponents/General/Footer";
-import { UserNavbar } from "@/Components/MyComponents/General/UserNavbar";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/Components/ui/card";
+import { websiteName } from "@/constants";
 
 interface EditProfilePageProps {
   params: {
     username: string;
   };
 }
+
+export const generateMetadata = async ({ params } : EditProfilePageProps) => {
+  const { username } = params;
+  return {
+    title: `${username} | Edit Profile | ${websiteName}`,
+    description: `Edit your profile information on Creator Sync`,
+  }
+};
 
 const EditProfilePage : React.FC<EditProfilePageProps> = async ({ params }) => {
   const username = await decodeURIComponent(params.username);
@@ -39,19 +46,15 @@ const EditProfilePage : React.FC<EditProfilePageProps> = async ({ params }) => {
     throw new Error("User not found");
   }
   return (
-    <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
-      <UserNavbar/>
-      <Card className="w-3/5">
-        <CardHeader>
-          <CardTitle>Edit Profile</CardTitle>
-          <CardDescription>
-            Edit your profile information below
-          </CardDescription>
-        </CardHeader>
-        <EditProfileForm user={user} />
-      </Card>
-      <Footer />
-    </div>
+    <Card className="w-3/5">
+      <CardHeader>
+        <CardTitle>Edit Profile</CardTitle>
+        <CardDescription>
+          Edit your profile information below
+        </CardDescription>
+      </CardHeader>
+      <EditProfileForm user={user} />
+    </Card>
   );
 }
 

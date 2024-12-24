@@ -3,8 +3,14 @@ import { EditorRequests } from "@/Components/MyComponents/Client/EditorRequests"
 import { Footer } from "@/Components/MyComponents/General/Footer";
 import { UserNavbar } from "@/Components/MyComponents/General/UserNavbar";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/Components/ui/card";
+import { websiteName } from "@/constants";
 
 import { ProjectType, RequestStatus } from "@prisma/client";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: `Requests | ${websiteName}`,
+};
 
 const demoRequests = [
   {
@@ -70,19 +76,15 @@ const RequestsPage = async () => {
   const requests = await getRequestEditors();
   // const requests = demoRequests;
   return (
-    <div className="w-lvw h-lvh flex flex-col gap-4 justify-between items-center">
-      <UserNavbar/>
-      <Card className="flex-grow w-4/5 flex flex-col gap-4 justify-start items-start border-none shadow-none">
-        <CardHeader>
-          <CardTitle>Project Requests</CardTitle>
-          <CardDescription>
-            Manage your project requests from creators who want you to edit their projects.
-          </CardDescription>
-        </CardHeader>
-        <EditorRequests initialRequests={requests}/>
-      </Card>
-      <Footer/>
-    </div>
+    <Card className="flex-grow w-4/5 flex flex-col gap-4 justify-start items-start border-none shadow-none">
+      <CardHeader>
+        <CardTitle>Project Requests</CardTitle>
+        <CardDescription>
+          Manage your project requests from creators who want you to edit their projects.
+        </CardDescription>
+      </CardHeader>
+      <EditorRequests initialRequests={requests}/>
+    </Card>
   )
 };
 

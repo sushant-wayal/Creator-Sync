@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
-import { Background } from "@/Components/MyComponents/General/Background";
 import { EdgeStoreProvider } from "@/lib/edgestore";
+import { Footer } from "@/Components/MyComponents/General/Footer";
 
 export const metadata: Metadata = {
   title: "Creator Sync",
@@ -27,8 +27,10 @@ export default async function RootLayout({
         />
         <SessionProvider>
           <EdgeStoreProvider>
-            {/* <Background /> */}
-            {children}
+            <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
+              {children}
+              <Footer />
+            </div>
             {signin}
             <div id="modal-root" />
           </EdgeStoreProvider>

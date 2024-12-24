@@ -1,8 +1,13 @@
 import { getNotifications } from "@/actions/notification";
 import { Notifications } from "@/Components/MyComponents/Client/Notifications";
-import { Footer } from "@/Components/MyComponents/General/Footer";
-import { UserNavbar } from "@/Components/MyComponents/General/UserNavbar";
+import { websiteName } from "@/constants";
 import { NotificationType, UserProjectRole } from "@prisma/client";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: `Notifications | ${websiteName}`,
+  description: "View your notifications.",
+};
 
 const demoNotifications = 
 [
@@ -238,11 +243,7 @@ const NotificationsPage = async () => {
   const notifications = await getNotifications();
   // const notifications = demoNotifications;
   return (
-    <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
-      <UserNavbar/>
-      <Notifications notifications={notifications} />
-      <Footer />
-    </div>
+    <Notifications notifications={notifications} />
   );
 };
 

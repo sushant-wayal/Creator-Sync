@@ -1,10 +1,15 @@
 import { getAllProjects } from "@/actions/project";
 import { auth } from "@/auth";
 import { ExploreProjects } from "@/Components/MyComponents/Client/ExploreProjects";
-import { Footer } from "@/Components/MyComponents/General/Footer";
-import { UserNavbar } from "@/Components/MyComponents/General/UserNavbar";
+import { websiteName } from "@/constants";
 import { db } from "@/lib/db";
 import { ProjectType } from "@prisma/client";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: `Explore | ${websiteName}`,
+  description: "Explore projects created by other users. You can request to work on a project, or create your own project."
+};
 
 const demoInitialProjects = [
   {
@@ -146,18 +151,14 @@ const ExplorePage = async () => {
   const initialProjects = await getAllProjects();
   // const initialProjects = demoInitialProjects;
   return (
-    <div className="flex flex-col justify-between items-center gap-4 w-lvw min-h-lvh">
-      <UserNavbar/>
-      <div className="w-lvw p-8 flex-grow flex flex-col gap-8">
-        <div className="space-y-2">
-          <h2 className="text-3xl font-bold">Explore Projects</h2>
-          <p className="text-lg text-gray-500">
-            Explore projects created by other users. You can request to work on a project, or create your own project.
-          </p>
-        </div>
-        <ExploreProjects initialProjects={initialProjects} readyToEdit={readyToEdit}/>
+    <div className="w-lvw p-8 flex-grow flex flex-col gap-8">
+      <div className="space-y-2">
+        <h2 className="text-3xl font-bold">Explore Projects</h2>
+        <p className="text-lg text-gray-500">
+          Explore projects created by other users. You can request to work on a project, or create your own project.
+        </p>
       </div>
-      <Footer/>
+      <ExploreProjects initialProjects={initialProjects} readyToEdit={readyToEdit}/>
     </div>
   );
 }

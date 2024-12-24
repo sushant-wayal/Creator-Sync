@@ -3,8 +3,6 @@ import { auth } from "@/auth"
 import { ExtendDeadlineForm } from "@/Components/MyComponents/Forms/ExtendDeadlineForm"
 import { RequestrevisionForm } from "@/Components/MyComponents/Forms/RequestRevisionForm"
 import { UploadNewVersionForm } from "@/Components/MyComponents/Forms/UploadNewVersionForm"
-import { Footer } from "@/Components/MyComponents/General/Footer"
-import { UserNavbar } from "@/Components/MyComponents/General/UserNavbar"
 import { ProfilePicture } from "@/Components/MyComponents/General/ProfilePicture"
 import { Badge } from "@/Components/ui/badge"
 import { Button } from "@/Components/ui/button"
@@ -25,12 +23,22 @@ import { RequestEditorDialog } from "@/Components/MyComponents/Client/RequestEdi
 import { getEditorsToRequest } from "@/actions/editor"
 import { EditorRating } from "@/Components/MyComponents/Client/EditorRating"
 import { markAllOfProjectAsRead } from "@/actions/notification"
+import { websiteName } from "@/constants"
 
 interface ProjectPageProps {
   params: {
     id: string
   }
 }
+
+export const generateMetadata = async ({ params } : ProjectPageProps) => {
+  const { id } = params;
+  const { title, description } = await getProject(id);
+  return {
+    title: `${title} | Project | ${websiteName}`,
+    description,
+  }
+};
 
 const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
   const { id } = params
@@ -250,8 +258,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
   // const allEditors = demoEditoraToRequest;
   await markAllOfProjectAsRead(id);
   return (
-    <div className="w-lvw h-lvh flex flex-col gap-4 justify-between items-center">
-      <UserNavbar/>
+    <>
       <Card className="w-4/5 flex flex-col gap-4 justify-start items-start border-none shadow-none">
         <CardHeader className="w-full flex flex-row items-center justify-between">
           <div className="flex flex-col justify-center items-start">
@@ -259,7 +266,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
             <CardDescription className="text-lg">{description}</CardDescription>
           </div>
           <div className="flex flex-row gap-4 justify-center items-center">
-            {completed && editor && (
+            {completed && editor && isCreator && (
               <Dialog>
                 <DialogTrigger>
                   <Button variant="outline">Rate Editor</Button>
@@ -596,8 +603,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
         </CardHeader>
         <EditRequests initialRequests={requests}/>
       </Card>}
-      <Footer />
-    </div>
+    </>
   )
 }
 
