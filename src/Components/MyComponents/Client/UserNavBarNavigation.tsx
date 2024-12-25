@@ -1,8 +1,10 @@
 "use client";
 
+import { totalUnreadNotifications } from "@/actions/notification";
 import { Bell, Compass, LayoutDashboard, MessageSquare, SquarePlus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface UserNavBarNavigationProps {
   readyToEdit: boolean;
@@ -12,6 +14,18 @@ interface UserNavBarNavigationProps {
 
 export const UserNavBarNavigation : React.FC<UserNavBarNavigationProps> = ({ readyToEdit, unreadNotifications, unreadRequests }) => {
   const pathname = usePathname();
+  const [unread, setUnread] = useState<number>(unreadNotifications);
+  const [requests, setRequests] = useState<number>(unreadRequests);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!pathname) return;
+      if (pathname.includes("/project/") || pathname == "/notifications") setUnread(await totalUnreadNotifications());
+    }
+    fetchData();
+    if (pathname == "/requests") {
+      setRequests(0);
+    }
+  }, [pathname])
   return (
     <div className="flex gap-8 justify-center items-center">
       <Link
@@ -58,9 +72,9 @@ export const UserNavBarNavigation : React.FC<UserNavBarNavigationProps> = ({ rea
       >
         <Bell size={24} />
         <span>Notifications</span>
-        {unreadNotifications > 0 && (
+        {unread > 0 && (
           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-            {unreadNotifications}
+            {unread}
           </span>
         )}
         {pathname === "/notifications" && (
@@ -76,9 +90,9 @@ export const UserNavBarNavigation : React.FC<UserNavBarNavigationProps> = ({ rea
         >
           <MessageSquare size={24} />
           <span>Requests</span>
-          {unreadRequests > 0 && (
+          {requests > 0 && (
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-              {unreadRequests}
+              {requests}
             </span>
           )}
           {pathname === "/requests" && (

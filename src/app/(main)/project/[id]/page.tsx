@@ -378,8 +378,8 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                 <div className="w-full">
                   <p className="font-semibold text-xl">Project Files</p>
                   <div className="w-full mt-5 flex flex-col gap-1 justify-start text-center">
-                    {FileVersion.map(({ id, url, name, version, createdAt }) => (
-                      <div key={id} className="w-full flex flex-row justify-between items-center rounded bg-gray-300 p-2">
+                    {FileVersion.map(({ id : fileVersionId, url, name, version, createdAt }) => (
+                      <div key={fileVersionId} className="w-full flex flex-row justify-between items-center rounded bg-gray-300 p-2">
                         <div className="flex justify-start items-center gap-2">
                           <FileVideo size={24} />
                           <p>{name}</p>
@@ -390,7 +390,9 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
                           <Link href={url} className="cursor-pointer">
                             <Download size={18} />
                           </Link>
-                          <Eye className="cursor-pointer ml-4" size={18} />
+                          <Link href={`/project/${id}/collaboration?fileVersion=${fileVersionId}`}>
+                            <Eye className="cursor-pointer ml-4" size={18} />
+                          </Link>
                         </div>
                       </div>
                     ))}

@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Logo } from "./Logo"
 import { websiteName } from "@/constants"
 import { Home, LogIn, User } from "lucide-react"
-import { LogoutButton } from "../Client/LogoutButton"
+// import { LogoutButton } from "../Client/LogoutButton"
 
 export const PublicNavbar = async () => {
   return (
@@ -18,13 +18,13 @@ export const PublicNavbar = async () => {
         </Link>
         <Link href="/signin" className="flex justify-center items-center gap-2 font-semibold hover:underline">
           <LogIn size={24} />
-          <p>Sign In</p>
+          <p>SignIn</p>
         </Link>
         <Link href="/signup" className="flex justify-center items-center gap-2 font-semibold hover:underline">
           <User size={24}/>
-          <p>Sign up</p>
+          <p>SignUp</p>
         </Link>
-        <LogoutButton />
+        {/* <LogoutButton /> */}
       </div>
     </nav>
   )

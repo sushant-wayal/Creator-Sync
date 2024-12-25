@@ -118,3 +118,14 @@ export const forgotPasswordEmailContent = (name: string, token: string) => (
   </html>
 `
 )
+export const formatTime = (timeStamp: number) => {
+  const hours = Math.floor(timeStamp / (100 * 60 * 60));
+  const minutes = Math.floor((timeStamp % (100 * 60 * 60)) / (100 * 60));
+  const seconds = Math.floor((timeStamp % (100 * 60)) / 100);
+  let result = "";
+  if (hours > 0) {
+    result += `${hours < 10 ? '0' : ''}${hours}:`;
+  }
+  result += `${minutes < 10 ? '0' : ''}${isNaN(minutes) ? '00' : minutes}:${seconds < 10 ? '0' : ''}${isNaN(seconds) ? '00' : seconds}`;
+  return result.trim();
+}

@@ -2,7 +2,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { NotificationType } from "@prisma/client";
-import { CalendarCheck, CheckCircle, Eye, FileVideo, IndianRupee, Key, ListChecks, Star, Users, Youtube } from "lucide-react";
+import { Bookmark, BookmarkCheck, CalendarCheck, CheckCircle, Eye, FileVideo, IndianRupee, Key, ListChecks, Star, Users, Youtube } from "lucide-react";
 import { useState } from "react";
 import { ProfilePicture } from "../General/ProfilePicture";
 import { Badge } from "@/Components/ui/badge";
@@ -85,6 +85,8 @@ export const Notifications : React.FC<NotificationProps> = ({ notifications }) =
               <SelectItem value="ACCEPT_REQUEST_EDIT">Accept Request Edit</SelectItem>
               <SelectItem value="ACCEPT_REQUEST_EDITOR">Accept Request Editor</SelectItem>
               <SelectItem value="COMPLETED_PROJECT">Completed Project</SelectItem>
+              <SelectItem value="NEW_ANNOTATION">New Annotation</SelectItem>
+              <SelectItem value="RESOLVED_ANNOTATION">Resolved Annotation</SelectItem>
               <SelectItem value="RATING">Rating</SelectItem>
               <SelectItem value="PAYMENT">Payment</SelectItem>
               <SelectItem value="EMAIL_VERIFICATION">Email Verification</SelectItem>
@@ -121,6 +123,8 @@ export const Notifications : React.FC<NotificationProps> = ({ notifications }) =
                 {n.type === "ACCEPT_REQUEST_EDIT" && <Icons condition={true} props={{ icon: Users }} />}
                 {n.type === "ACCEPT_REQUEST_EDITOR" && <Icons condition={true} props={{ icon: Users }} />}
                 {n.type === "COMPLETED_PROJECT" && <Icons condition={true} props={{ icon: CheckCircle }} />}
+                {n.type === "NEW_ANNOTATION" && <Icons condition={true} props={{ icon: Bookmark }} />}
+                {n.type === "RESOLVED_ANNOTATION" && <Icons condition={true} props={{ icon: BookmarkCheck }} />}
                 {n.type === "RATING" && <Icons condition={true} props={{ icon: Star }} />}
                 {n.type === "PAYMENT" && <Icons condition={true} props={{ icon: IndianRupee }} />}
                 {n.type === "EMAIL_VERIFICATION" && <Icons condition={true} props={{ icon: CheckCircle }} />}

@@ -71,6 +71,19 @@ model User {
   updatedAt                     DateTime       @updatedAt
 }
 
+model FileAnnotation {
+  id        String   @id @default(cuid())
+  content   String
+  timeStamp Int
+  x         Float
+  y         Float
+  resolved  Boolean  @default(false)
+  FileVersionId String
+  FileVersion FileVersion @relation(fields: [FileVersionId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model FileVersion {
   id        String   @id @default(cuid())
   version   Int
@@ -78,6 +91,19 @@ model FileVersion {
   url       String
   projectId String
   project   Project  @relation("FileVersionRelation", fields: [projectId], references: [id])
+  annotations FileAnnotation[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ThumbnailAnnotation {
+  id        String   @id @default(cuid())
+  content   String
+  x         Float
+  y         Float
+  resolved  Boolean  @default(false)
+  ThumbnailVersionId String
+  ThumbnailVersion ThumbnailVersion @relation(fields: [ThumbnailVersionId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -89,6 +115,7 @@ model ThumbnailVersion {
   url       String
   projectId String
   project   Project  @relation("ThumbnailVersionRelation", fields: [projectId], references: [id])
+  annotations ThumbnailAnnotation[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -184,6 +211,8 @@ enum NotificationType {
   ACCEPT_REQUEST_EDITOR
   COMPLETED_PROJECT
   RATING
+  NEW_ANNOTATION
+  RESOLVED_ANNOTATION
   PAYMENT
   EMAIL_VERIFICATION
   PASSWORD_RESET

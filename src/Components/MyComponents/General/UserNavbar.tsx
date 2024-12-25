@@ -33,7 +33,7 @@ export const UserNavbar = async () => {
   const unreadNotifications = await totalUnreadNotifications();
   const unreadRequests = await totalUnreadRequests();
   return (
-    <nav className="w-full h-16 flex px-3 py-2 justify-between items-center bg-white text-black border-b-[1px] border-gray-200">
+    <nav className="z-[999] sticky top-0 left-0 w-lvw h-16 flex px-3 py-2 justify-between items-center text-black border-b-[1px] border-gray-200 backdrop-blur-3xl">
       <Link href="/" className="flex justify-center items-center gap-2">
         <Logo size={24} />
         <h1 className="font-bold text-2xl">{websiteName}</h1>
