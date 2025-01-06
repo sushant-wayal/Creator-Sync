@@ -25,6 +25,7 @@ contract Payment {
     AggregatorV3Interface internal immutable iPriceFeed;
     uint256 private constant ONE_ETH = 1 ether;
     uint256 private constant PENALTY = 2;
+    uint256 constant PRECISION = 1e18;
 
     mapping(string ProjectId => PaymentData) private sPayments;
 
@@ -65,11 +66,12 @@ contract Payment {
         PaymentData storage payment = sPayments[projectId];
         uint256 penalty = 0;
         if (block.timestamp > payment.deadline) {
-            penalty = ((block.timestamp - payment.deadline) / (24 * 60 * 60)) * (PENALTY * payment.priceInUsd) / 100;
+            uint256 dueDays = (block.timestamp - payment.deadline) / (24 * 60 * 60);
+            penalty = (dueDays * payment.priceInUsd * PENALTY * PRECISION)/ 100;
         }
         uint256 toPayInUsd = 0;
         if (penalty <= payment.toPayInUsd) {
-            toPayInUsd = payment.toPayInUsd - penalty;
+            toPayInUsd = (payment.toPayInUsd * PRECISION) - penalty;
         }
         uint256 oneEthtoUsd = ONE_ETH.getConversionRate(iPriceFeed);
         uint256 toPayInEth = toPayInUsd / oneEthtoUsd;
@@ -79,7 +81,7 @@ contract Payment {
         (success, ) = payment.creator.call{ value: toRefundInEth }("");
         if (!success) revert Payment__PaymentFailed();
         delete sPayments[projectId];
-        emit PaymentDone(toPayInUsd, penalty, projectId);
+        emit PaymentDone(toPayInUsd / PRECISION, penalty / PRECISION, projectId);
     }
 
 

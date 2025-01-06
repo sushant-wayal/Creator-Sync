@@ -24,6 +24,7 @@ contract PaymentTest is Test {
     string constant PROJECT_ID = "projectId";
     uint256 private constant ONE_ETH = 1 ether;
     uint256 private constant PENALTY = 2;
+    uint256 constant PRECISION = 1e18;
 
     modifier createProject(uint256 _deadline) {
         vm.prank(SENDER);
@@ -85,18 +86,19 @@ contract PaymentTest is Test {
         uint256 deadline = payment.getPayments(PROJECT_ID).deadline;
         uint256 penalty = 0;
         if (block.timestamp > deadline) {
-            penalty = ((block.timestamp - deadline) / (24 * 60 * 60)) * (PENALTY * PRICE_IN_USD) / 100;
+            uint256 dueDays = (block.timestamp - deadline) / (24 * 60 * 60);
+            penalty = (dueDays * PRICE_IN_USD * PENALTY * PRECISION)/ 100;
         }
         uint256 toPayInUsd = 0;
         if (penalty <= SEND_VALUE.getConversionRate(priceFeed)) {
-            toPayInUsd = SEND_VALUE.getConversionRate(priceFeed) - penalty;
+            toPayInUsd = (SEND_VALUE.getConversionRate(priceFeed) * PRECISION) - penalty;
         }
         uint256 oneEthtoUsd = ONE_ETH.getConversionRate(priceFeed);
         uint256 toPayInEth = toPayInUsd / oneEthtoUsd;
         uint256 toRefundInEth = penalty / oneEthtoUsd;
         vm.prank(SENDER);
         vm.expectEmit(true, true, true, false, address(payment));
-        emit PaymentDone(toPayInUsd, penalty, PROJECT_ID);
+        emit PaymentDone(toPayInUsd / PRECISION , penalty / PRECISION, PROJECT_ID);
         payment.complete(PROJECT_ID);
         assertEq(address(SENDER).balance, STARTING_BALANCE - SEND_VALUE + toRefundInEth);
         assertEq(address(RECEIVER).balance, STARTING_BALANCE + toPayInEth);
