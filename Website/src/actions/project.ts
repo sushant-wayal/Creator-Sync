@@ -12,6 +12,7 @@ interface CreateProjectInput {
   fileName: string;
   duration: number;
   deadline: Date;
+  budget: number;
   instructions: {
     content: string;
     nature: "COMPULSORY" | "OPTIONAL";
@@ -27,7 +28,7 @@ export const createProject = async (data: CreateProjectInput) => {
   if (!creatorId) {
     throw new Error("Creator ID is undefined");
   }
-  const { title, description, type, editorId , fileUrl, instructions, duration, deadline, fileName } = data;
+  const { title, description, type, editorId , fileUrl, instructions, duration, deadline, budget, fileName } = data;
   const { id } = await db.project.create({
     data: {
       title,
@@ -41,6 +42,7 @@ export const createProject = async (data: CreateProjectInput) => {
       } : undefined,
       duration,
       deadline,
+      budget,
       FileVersion: {
         create: {
           version: 0,
@@ -154,6 +156,7 @@ export const getProject = async (id: string) => {
         select: {
           id: true,
           createdAt: true,
+          budget: true,
           editor: {
             select: {
               id: true,

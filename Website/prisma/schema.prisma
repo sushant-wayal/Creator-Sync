@@ -153,6 +153,7 @@ model RequestEdit {
   project     Project  @relation(fields: [projectId], references: [id])
   editorId    String
   editor      User     @relation(fields: [editorId], references: [id])
+  budget      Float
   status      RequestStatus @default(PENDING)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -188,6 +189,7 @@ model Project {
   editorId     String?
   duration     Int
   deadline     DateTime
+  budget       Float
   completed    Boolean            @default(false)
   FileVersion  FileVersion[]      @relation("FileVersionRelation")
   ThumbnailVersion    ThumbnailVersion[] @relation("ThumbnailVersionRelation")

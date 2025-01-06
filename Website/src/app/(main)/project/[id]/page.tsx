@@ -17,13 +17,13 @@ import { UploadThumbnail } from "@/Components/MyComponents/Client/UploadThumbnai
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/Components/ui/hover-card"
 import { ApproveUploadButton } from "@/Components/MyComponents/Client/ApproveUploadButton"
 import { db } from "@/lib/db"
-import { RequestEditButton } from "@/Components/MyComponents/Client/RequestEditButton"
 import { EditRequests } from "@/Components/MyComponents/Client/EditRequests"
 import { RequestEditorDialog } from "@/Components/MyComponents/Client/RequestEditorDialog"
 import { getEditorsToRequest } from "@/actions/editor"
 import { EditorRating } from "@/Components/MyComponents/Client/EditorRating"
 import { markAllOfProjectAsRead } from "@/actions/notification"
 import { websiteName } from "@/constants"
+import { RequestEditForm } from "@/Components/MyComponents/Forms/RequestEditForm"
 
 interface ProjectPageProps {
   params: {
@@ -50,6 +50,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
     type: "Demo",
     duration: "1 week",
     deadline: new Date(),
+    budget: 1000,
     Instructions: [
       {
         id: "1",
@@ -198,8 +199,8 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
       }
     ]
   }
-  const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests } = await getProject(id);
-  // const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests } = demoProject;
+  const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests, budget } = await getProject(id);
+  // const { title, description, type, duration, deadline, Instructions, FileVersion, ThumbnailVersion, isCreator, completed, creator, editor, createdAt, requests, budget } = demoProject;
   // if (editor && session.user.id != creator.id && session.user.id != editor.id) throw new Error("You are not authorized to view this project");
   const totalInstructions = Instructions.length;
   const completedInstructions = Instructions.filter((instruction) => instruction.status === "COMPLETED").length;
@@ -266,6 +267,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
             <CardDescription className="text-lg">{description}</CardDescription>
           </div>
           <div className="flex flex-row gap-4 justify-center items-center">
+            <p className="text-gray-600">${budget}</p>
             {completed && editor && isCreator && (
               <Dialog>
                 <DialogTrigger>
@@ -296,7 +298,22 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
               </Link>
               :
               !isCreator ? 
-                <RequestEditButton projectId={id}/>
+                <Dialog>
+                  <DialogTrigger>
+                    <Button>
+                      Request Edit
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Request Edit</DialogTitle>
+                      <DialogDescription>
+                        Request to edit this project
+                      </DialogDescription>
+                    </DialogHeader>
+                    <RequestEditForm projectId={id}/>
+                  </DialogContent>
+                </Dialog>
                 :
                 <Dialog>
                   <DialogTrigger>

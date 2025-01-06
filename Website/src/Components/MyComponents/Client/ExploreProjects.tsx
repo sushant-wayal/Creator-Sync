@@ -12,7 +12,6 @@ import { Calendar } from "@/Components/ui/calendar";
 import { useEffect, useState } from "react";
 import { ProfilePicture } from "../General/ProfilePicture";
 import { Badge } from "@/Components/ui/badge";
-import { requestEdit } from "@/actions/requestEdit";
 import Link from "next/link";
 
 interface ExploreProjectsProps {
@@ -29,6 +28,7 @@ interface ExploreProjectsProps {
     type: ProjectType;
     duration: number;
     deadline: Date;
+    budget: number;
     _count: {
       requests: number;
       compulsoryInstructions: number;
@@ -45,20 +45,16 @@ export const ExploreProjects : React.FC<ExploreProjectsProps> = ({ initialProjec
   const [type, setType] = useState<ProjectType | "all" | undefined>(undefined);
   const [duration, setDuration] = useState<number | "all">("all");
   const [deadline, setDeadline] = useState<Date | null>(null);
+  const [budget, setBudget] = useState<number | "all">("all");
   useEffect(() => {
     setProjects(initialProjects.filter(project => (
       (project.title.toLowerCase() + project.creator.name.toLowerCase() + project.description.toLowerCase()).includes(search.toLowerCase()) &&
       (!type || type === "all" || project.type === type) &&
       (duration === "all" || project.duration <= duration) &&
-      (!deadline || project.deadline <= deadline)
+      (!deadline || project.deadline <= deadline) &&
+      (budget === "all" || project.budget <= budget)
     )));
   }, [search, type, duration, deadline]);
-  const handleRequestEdit = async (e : React.MouseEvent<HTMLButtonElement>, projectId : string) => {
-    e.stopPropagation();
-    await requestEdit(projectId);
-    setProjects(projects.filter(project => project.id !== projectId));
-    initialProjects = initialProjects.filter(project => project.id !== projectId);
-  };
   return (
     <div className="flex-grow w-full flex flex-col">
       <div className="w-full flex gap-4">
@@ -120,6 +116,13 @@ export const ExploreProjects : React.FC<ExploreProjectsProps> = ({ initialProjec
             />
           </PopoverContent>
         </Popover>
+        <Input
+          type="number"
+          placeholder="Budget"
+          value={budget === "all" ? "" : budget}
+          onChange={e => setBudget(e.target.value === "" ? "all" : parseInt(e.target.value))}
+          className="w-40"
+        />
       </div>
       <div className="flex-grow grid grid-cols-3 gap-4 mt-4">
         {projects.length === 0 && (
@@ -139,6 +142,7 @@ export const ExploreProjects : React.FC<ExploreProjectsProps> = ({ initialProjec
           type,
           duration,
           deadline,
+          budget,
           _count: {
             requests,
             compulsoryInstructions,
@@ -182,9 +186,7 @@ export const ExploreProjects : React.FC<ExploreProjectsProps> = ({ initialProjec
                 <p className="text-sm text-gray-500" suppressHydrationWarning>
                   Posted {formatDistanceToNow(updatedAt)} ago
                 </p>
-                {readyToEdit && (
-                  <Button onClick={(e) => handleRequestEdit(e, id)}>Request Edit</Button>
-                )}
+                <span className="text-sm text-black">${budget}</span>
               </div>
             </div>
           </Link>

@@ -25,6 +25,7 @@ const demoInitialProjects = [
     type: 'COMMERCIAL' as ProjectType,
     duration: 5,
     deadline: new Date(),
+    budget: 1000,
     _count: {
       requests: 0,
       compulsoryInstructions: 0,
@@ -45,6 +46,7 @@ const demoInitialProjects = [
     type: 'DOCUMENTARY' as ProjectType,
     duration: 10,
     deadline: new Date(),
+    budget: 2000,
     _count: {
       requests: 0,
       compulsoryInstructions: 0,
@@ -65,6 +67,7 @@ const demoInitialProjects = [
     type: 'MUSIC_VIDEO' as ProjectType,
     duration: 15,
     deadline: new Date(),
+    budget: 3000,
     _count: {
       requests: 0,
       compulsoryInstructions: 0,
@@ -85,6 +88,7 @@ const demoInitialProjects = [
     type: 'SHORT_FILM' as ProjectType,
     duration: 20,
     deadline: new Date(),
+    budget: 4000,
     _count: {
       requests: 0,
       compulsoryInstructions: 0,
@@ -105,6 +109,7 @@ const demoInitialProjects = [
     type: 'VLOG' as ProjectType,
     duration: 25,
     deadline: new Date(),
+    budget: 5000,
     _count: {
       requests: 0,
       compulsoryInstructions: 0,
@@ -125,6 +130,7 @@ const demoInitialProjects = [
     type: "COMMERCIAL" as ProjectType,
     duration: 30,
     deadline: new Date(),
+    budget: 6000,
     _count: {
       requests: 0,
       compulsoryInstructions: 0,
@@ -148,8 +154,8 @@ const ExplorePage = async () => {
     throw new Error("User not found");
   }
   const { readyToEdit } = user;
-  const initialProjects = await getAllProjects();
-  // const initialProjects = demoInitialProjects;
+  // const initialProjects = await getAllProjects();
+  const initialProjects = demoInitialProjects;
   return (
     <div className="w-lvw p-8 flex-grow flex flex-col gap-8">
       <div className="space-y-2">

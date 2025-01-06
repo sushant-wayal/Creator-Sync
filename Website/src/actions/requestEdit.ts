@@ -3,7 +3,7 @@
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
 
-export const requestEdit = async (projectId: string, notify : boolean = true) => {
+export const requestEdit = async (projectId: string, budget: number, notify : boolean = true) => {
   const session = await auth();
   if (!session || !session.user) {
     throw new Error("You need to be logged in to request an edit");
@@ -15,7 +15,8 @@ export const requestEdit = async (projectId: string, notify : boolean = true) =>
   await db.requestEdit.create({
     data: {
       projectId,
-      editorId: userId
+      editorId: userId,
+      budget,
     }
   })
   const project = await db.project.findUnique({

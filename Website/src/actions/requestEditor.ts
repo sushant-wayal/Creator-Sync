@@ -80,7 +80,7 @@ export const acceptRequest = async (id: string) => {
     data: { status: "ACCEPTED" },
     include: { project: true }
   });
-  await requestEdit(request.projectId, false);
+  await requestEdit(request.projectId, request.project.budget, false);
   await db.notification.create({
     data: {
       title: "Request accepted",

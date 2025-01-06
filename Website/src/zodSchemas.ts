@@ -76,6 +76,9 @@ export const NewProjectFormSchema = z.object({
   deadline: z.date({
     message: "Invalid Deadline"
   }),
+  budget: z.string().min(1, {
+    message: "Budget is Required"
+  })
 })
 
 export const RequestRevisionFormSchema = z.object({
@@ -108,4 +111,10 @@ export const EditProfileFormSchema = z.object({
   xLink: z.string().nullable(),
   instagramLink: z.string().nullable(),
   skills: z.array(z.string())
+})
+
+export const RequestEditFormSchema = z.object({
+  budget: z.string().min(1, {
+    message: "Budget is Required"
+  })
 })

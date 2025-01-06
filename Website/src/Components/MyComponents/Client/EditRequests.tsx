@@ -14,6 +14,7 @@ interface EditRequestsProps {
   initialRequests: {
     id: string;
     createdAt: Date;
+    budget: number;
     editor: {
       id: string;
       name: string;
@@ -40,12 +41,15 @@ export const EditRequests: React.FC<EditRequestsProps> = ({ initialRequests }) =
   };
   return (
     <CardContent className="w-full flex flex-col gap-4 justify-start items-start">
-      {requests.map(({ id, createdAt, editor }) => (
+      {requests.map(({ id, createdAt, editor, budget }) => (
         <div key={id} className="w-full rounded-lg border-[1px] border-gray-200 p-4 flex justify-between items-center">
           <div className="flex justify-center items-center gap-3">
             <ProfilePicture url={editor.profilePicture} name={editor.name} />
             <div className="space-y-2">
-              <p className="font-semibold">{editor.name}</p>
+              <div className="flex gap-2 justify-start items-center">
+                <p className="font-semibold">{editor.name}</p>
+                <p className="text-gray-500">(${budget})</p>
+              </div>
               <div className="flex gap-3 justify-center items-center text-gray-500 font-[450] text-sm">
                 <div className="flex gap-2 justify-center items-center">
                   <Star size={18} color="black" className="fill-primary"/>
