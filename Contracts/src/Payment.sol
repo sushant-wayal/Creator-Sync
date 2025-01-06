@@ -7,22 +7,83 @@ import { PriceConverter } from "./PriceConverter.sol";
 contract Payment {
     using PriceConverter for uint256;
 
-    error Payment__PayingLess(uint256 min_in_usd, uint256 actual_in_usd);
-
-    event PaymentDone(uint256 indexed amount);
-
-    AggregatorV3Interface internal s_priceFeed;
-
-    constructor(address _priceFeed) {
-        s_priceFeed = AggregatorV3Interface(_priceFeed);
+    struct PaymentData {
+        uint256 priceInUsd;
+        uint256 toPayInUsd;
+        string projectId;
+        uint256 deadline;
+        address editor;
+        address creator;
     }
 
-    function pay(uint256 min_in_usd, address receiver) public payable {
-        uint256 actual_in_usd = msg.value.getConversionRate(s_priceFeed);
-        if (actual_in_usd < min_in_usd) {
-            revert Payment__PayingLess(min_in_usd, actual_in_usd);
+    error Payment__PayingLess(uint256 priceInUsd, uint256 actualInUsd);
+    error Payment__OnlyCreatorCanExtendDeadline();
+    error Payment__PaymentFailed();
+
+    event PaymentDone(uint256 indexed amount, uint256 indexed refund, string indexed projectId);
+
+    AggregatorV3Interface internal immutable iPriceFeed;
+    uint256 private constant ONE_ETH = 1 ether;
+    uint256 private constant PENALTY = 2;
+
+    mapping(string ProjectId => PaymentData) private sPayments;
+
+    constructor(address _priceFeed) {
+        iPriceFeed = AggregatorV3Interface(_priceFeed);
+    }
+
+    function create(
+        string memory projectId,
+        uint256 priceInUsd,
+        uint256 deadline,
+        address editor
+    ) public payable {
+        uint256 toPayInUsd = msg.value.getConversionRate(iPriceFeed);
+        if (toPayInUsd < priceInUsd) {
+            revert Payment__PayingLess(priceInUsd, toPayInUsd);
         }
-        payable(receiver).transfer(msg.value);
-        emit PaymentDone(actual_in_usd);
+        sPayments[projectId] = PaymentData(
+            priceInUsd,
+            toPayInUsd,
+            projectId,
+            deadline,
+            editor,
+            msg.sender
+        );
+    }
+
+    function extendDeadline(string memory projectId, uint256 extensionInDays) public {
+        PaymentData storage payment = sPayments[projectId];
+        uint256 extension = extensionInDays * (24 * 60 * 60);
+        if (msg.sender != payment.creator) {
+            revert Payment__OnlyCreatorCanExtendDeadline();
+        }
+        payment.deadline += extension;
+    }
+
+    function complete(string memory projectId) public payable {
+        PaymentData storage payment = sPayments[projectId];
+        uint256 penalty = 0;
+        if (block.timestamp > payment.deadline) {
+            penalty = ((block.timestamp - payment.deadline) / (24 * 60 * 60)) * (PENALTY * payment.priceInUsd) / 100;
+        }
+        uint256 toPayInUsd = 0;
+        if (penalty <= payment.toPayInUsd) {
+            toPayInUsd = payment.toPayInUsd - penalty;
+        }
+        uint256 oneEthtoUsd = ONE_ETH.getConversionRate(iPriceFeed);
+        uint256 toPayInEth = toPayInUsd / oneEthtoUsd;
+        (bool success, ) = payment.editor.call{ value: toPayInEth }("");
+        if (!success) revert Payment__PaymentFailed();
+        uint256 toRefundInEth = penalty / oneEthtoUsd;
+        (success, ) = payment.creator.call{ value: toRefundInEth }("");
+        if (!success) revert Payment__PaymentFailed();
+        delete sPayments[projectId];
+        emit PaymentDone(toPayInUsd, penalty, projectId);
+    }
+
+
+    function getPayments(string memory projectId) external view returns (PaymentData memory) {
+        return sPayments[projectId];
     }
 }

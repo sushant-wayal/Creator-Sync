@@ -11,48 +11,94 @@ import { AggregatorV3Interface } from "../../lib/chainlink/contracts/src/v0.8/sh
 contract PaymentTest is Test {
     using PriceConverter for uint256;
 
-    event PaymentDone(uint256 indexed amount);
+    event PaymentDone(uint256 indexed amount, uint256 indexed refund, string indexed projectId);
 
     Payment payment;
-    HelperConfig helperConfig;
+    AggregatorV3Interface priceFeed;
     address SENDER = makeAddr("SENDER");
     address RECEIVER = makeAddr("RECEIVER");
     uint256 constant SEND_VALUE = 0.1 ether;
     uint256 constant STARTING_BALANCE = 100 ether;
     uint256 constant GAS_PRICE = 1;
+    uint256 constant PRICE_IN_USD = 100;
+    string constant PROJECT_ID = "projectId";
+    uint256 private constant ONE_ETH = 1 ether;
+    uint256 private constant PENALTY = 2;
+
+    modifier createProject(uint256 _deadline) {
+        vm.prank(SENDER);
+        payment.create{value : SEND_VALUE}(PROJECT_ID, PRICE_IN_USD, _deadline, RECEIVER);
+        _;
+    }
     
     function setUp() external {
         DeployPayment depolyPayment = new DeployPayment();
+        HelperConfig helperConfig;
         (payment, helperConfig) = depolyPayment.run();
+        priceFeed = AggregatorV3Interface(helperConfig.activeNetworkConfig());
         vm.deal(SENDER, STARTING_BALANCE);
         vm.deal(RECEIVER, STARTING_BALANCE);
+        vm.warp(2 days);
     }
 
-    function testPayRevertWhenNotPaidEnough() external {
+    function testRevertIfPayedLessInCreate() public {
+        uint256 priceInUsd = 100;
+        uint256 deadline = block.timestamp + 1 days;
+        address editor = RECEIVER;
+        string memory projectId = "projectId";
         vm.prank(SENDER);
-        uint256 min_in_usd = 100;
         vm.expectPartialRevert(Payment.Payment__PayingLess.selector);
-        payment.pay(min_in_usd, RECEIVER);
+        payment.create(projectId, priceInUsd, deadline, editor);
     }
 
-    function testPayTransferToReceiver() external {
-        uint256 min_in_usd = 0;
-        uint256 expected_balance = STARTING_BALANCE + SEND_VALUE;
-        vm.txGasPrice(GAS_PRICE);
+    function testPaymentCreated() public {
+        uint256 priceInUsd = 100;
+        uint256 deadline = block.timestamp + 1 days;
+        address editor = RECEIVER;
+        string memory projectId = "projectId";
         vm.prank(SENDER);
-        uint256 gasStart = gasleft();
-        payment.pay{ value: SEND_VALUE }(min_in_usd, RECEIVER);
-        uint256 gasEnd = gasleft();
-        uint256 gasSpent = (gasStart - gasEnd) * tx.gasprice;
-        console.log("Gas spent: ", gasSpent);
-        assertEq(address(RECEIVER).balance, expected_balance);
+        payment.create{value : SEND_VALUE}(projectId, priceInUsd, deadline, editor);
+        Payment.PaymentData memory paymentData = payment.getPayments(projectId);
+        assertEq(paymentData.priceInUsd, priceInUsd);
+        assertEq(paymentData.toPayInUsd, SEND_VALUE.getConversionRate(priceFeed));
+        assertEq(paymentData.projectId, projectId);
+        assertEq(paymentData.deadline, deadline);
+        assertEq(paymentData.editor, editor);
+        assertEq(paymentData.creator, SENDER);
     }
 
-    function testPayEmitPaymentDone() external {
-        uint256 min_in_usd = 0;
+    function testRevertWhenDeadlineExtendedByNotCreator() public createProject(block.timestamp + 1 days) {
+        vm.prank(RECEIVER);
+        vm.expectRevert(Payment.Payment__OnlyCreatorCanExtendDeadline.selector);
+        payment.extendDeadline(PROJECT_ID, 1);
+    }
+
+    function testDeadlineExtendedByCreator() public createProject(block.timestamp + 1 days) {
+        uint256 deadlineBefore = payment.getPayments(PROJECT_ID).deadline;
         vm.prank(SENDER);
-        vm.expectEmit(true, false, false, false, address(payment));
-        emit PaymentDone(SEND_VALUE.getConversionRate(AggregatorV3Interface(helperConfig.activeNetworkConfig())));
-        payment.pay{ value: SEND_VALUE }(min_in_usd, RECEIVER);
+        payment.extendDeadline(PROJECT_ID, 1);
+        Payment.PaymentData memory paymentData = payment.getPayments(PROJECT_ID);
+        assertEq(paymentData.deadline, deadlineBefore + 1 days);
+    }
+
+    function testComplete() public createProject(block.timestamp - 1 days) {
+        uint256 deadline = payment.getPayments(PROJECT_ID).deadline;
+        uint256 penalty = 0;
+        if (block.timestamp > deadline) {
+            penalty = ((block.timestamp - deadline) / (24 * 60 * 60)) * (PENALTY * PRICE_IN_USD) / 100;
+        }
+        uint256 toPayInUsd = 0;
+        if (penalty <= SEND_VALUE.getConversionRate(priceFeed)) {
+            toPayInUsd = SEND_VALUE.getConversionRate(priceFeed) - penalty;
+        }
+        uint256 oneEthtoUsd = ONE_ETH.getConversionRate(priceFeed);
+        uint256 toPayInEth = toPayInUsd / oneEthtoUsd;
+        uint256 toRefundInEth = penalty / oneEthtoUsd;
+        vm.prank(SENDER);
+        vm.expectEmit(true, true, true, false, address(payment));
+        emit PaymentDone(toPayInUsd, penalty, PROJECT_ID);
+        payment.complete(PROJECT_ID);
+        assertEq(address(SENDER).balance, STARTING_BALANCE - SEND_VALUE + toRefundInEth);
+        assertEq(address(RECEIVER).balance, STARTING_BALANCE + toPayInEth);
     }
 }
