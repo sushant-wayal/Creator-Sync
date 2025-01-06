@@ -97,3 +97,27 @@ export const updateYoutubeRefreshToken = async (id: string, refreshToken: string
     }
   });
 }
+
+export const resetRefreshToken = async (id: string) => {
+  const session = await auth();
+  if (!session || !session.user || !session.user.id) {
+    throw new Error("User not authenticated");
+  }
+  await db.user.update({
+    where: {
+      id,
+    },
+    data: {
+      youtubeRefreshToken: null
+    }
+  });
+  await db.notification.create({
+    data: {
+      title: "YouTube account disconnected",
+      message: "Your YouTube account has been disconnected",
+      type: "YOUTUBE_REFRESH",
+      senderProjectRole: "SYSTEM",
+      toUserId: id
+    }
+  });
+}
