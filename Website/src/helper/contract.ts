@@ -90,9 +90,11 @@ export const paymentDoneEventListener = async () => {
   const contract = await getContract();
   contract.on('PaymentDone', async (indexedProjectId, amount, refund, projectId, _event) => {
     console.log('PaymentDone event');
+    amount = Number(amount) / 10**18;
+    refund = Number(refund) / 10**18;
     console.log("Indexed Project ID:", indexedProjectId);
-    console.log("Amount (USD):", BigInt(amount).toString(), amount);
-    console.log("Refund (USD):", BigInt(refund).toString(), refund);
+    console.log("Amount (USD):", amount);
+    console.log("Refund (USD):", refund);
     console.log("Project ID:", projectId);
     await createCompleteTypePayment(projectId, Number(amount), Number(refund));
   });
