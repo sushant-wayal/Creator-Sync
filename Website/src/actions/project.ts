@@ -164,6 +164,7 @@ export const getProject = async (id: string) => {
               profilePicture: true,
               rating: true,
               skills: true,
+              accountAddress: true,
               _count: {
                 select: {
                   editedProjects: {

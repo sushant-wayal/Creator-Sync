@@ -1,6 +1,7 @@
 "use client";
 
 import { requestEdit } from "@/actions/requestEdit";
+import { getAddress } from "@/actions/user";
 import { Button } from "@/Components/ui/button";
 import { DialogFooter } from "@/Components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/Components/ui/form";
@@ -24,6 +25,11 @@ export const RequestEditForm : React.FC<RequestEditFormProps> = ({ projectId }) 
   const onSubmit = async(values: z.infer<typeof RequestEditFormSchema>) => {
     const toastId = toast.loading("Requesting Edit...");
     try {
+      const address = await getAddress();
+      if (!address) {
+        toast.error("Your account address is not connected", { id: toastId });
+        return;
+      }
       const { budget } = values;
       const budgetInNumber = Number(budget);
       if (budgetInNumber <= 0) {

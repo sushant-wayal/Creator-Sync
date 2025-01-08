@@ -9,8 +9,12 @@ import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/Components/ui/button";
 import { acceptEditRequest, rejectEditRequest } from "@/actions/requestEdit";
 import { useRouter } from "next/navigation";
+import { paymentCreate } from "@/helper/contract";
+import { toast } from "sonner";
 
 interface EditRequestsProps {
+  projectId: string;
+  deadline: Date;
   initialRequests: {
     id: string;
     createdAt: Date;
@@ -21,6 +25,7 @@ interface EditRequestsProps {
       profilePicture: string | null;
       rating: number;
       skills: string[];
+      accountAddress: string | null;
       _count: {
         editedProjects: number;
       }
@@ -28,7 +33,7 @@ interface EditRequestsProps {
   }[];
 }
 
-export const EditRequests: React.FC<EditRequestsProps> = ({ initialRequests }) => {
+export const EditRequests: React.FC<EditRequestsProps> = ({ projectId, deadline, initialRequests }) => {
   const router = useRouter();
   const [requests, setRequests] = useState(initialRequests);
   const handleRejectRequest = async (requestId: string) => {
@@ -36,8 +41,25 @@ export const EditRequests: React.FC<EditRequestsProps> = ({ initialRequests }) =
     setRequests(requests.filter((request) => request.id !== requestId));
   };
   const handleAcceptRequest = async (requestId: string) => {
-    await acceptEditRequest(requestId);
-    router.refresh();
+    const toastId = toast.loading("Creating payment...");
+    const request = requests.find((request) => request.id === requestId);
+    if (!request) return;
+    const { budget, editor: { accountAddress } } = request;
+    if (!accountAddress) {
+      toast.error("Editor's account address is not connected");
+      return;
+    }
+    try {
+      await paymentCreate(projectId, budget, deadline, accountAddress);
+      toast.loading("Assigning Editor...", { id: toastId });
+      await acceptEditRequest(requestId);
+      toast.success("Editor assigned successfully", { id: toastId });
+      router.refresh();
+    } catch (error : any) {
+      console.log(error);
+      const errorMsg = String(error).split(`(`)[0].split(`:`)[1];
+      toast.error(errorMsg, { id: toastId });
+    }
   };
   return (
     <CardContent className="w-full flex flex-col gap-4 justify-start items-start">

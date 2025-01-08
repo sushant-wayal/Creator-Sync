@@ -162,6 +162,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
           id: "2",
           name: "Demo Editor",
           profilePicture: "https://example.com",
+          accountAddress: "0x1234567890",
           rating: 4.5,
           skills: ["Demo Skill"],
           _count: {
@@ -176,6 +177,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
           id: "3",
           name: "Demo Editor",
           profilePicture: "https://example.com",
+          accountAddress: "0x1234567890",
           rating: 4.5,
           skills: ["Demo Skill"],
           _count: {
@@ -190,6 +192,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
           id: "4",
           name: "Demo Editor",
           profilePicture: "https://example.com",
+          accountAddress: "0x1234567890",
           rating: 4.5,
           skills: ["Demo Skill"],
           _count: {
@@ -221,6 +224,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
       profilePicture: "https://randomuser.me/api/port",
       skills: ["JavaScript", "React", "Node.js"],
       rating: 4.5,
+      accountAddress: "0x1234567890",
       editedProjects: [{ deadline: new Date() }],
       _count: { editedProjects: 5 }
     },
@@ -231,6 +235,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
       profilePicture: "https://randomuser.me/api/port",
       skills: ["TypeScript", "React", "Node.js"],
       rating: 4.2,
+      accountAddress: "0x1234567890",
       editedProjects: [{ deadline: new Date() }],
       _count: { editedProjects: 3 }
     },
@@ -241,6 +246,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
       profilePicture: "https://randomuser.me/api/port",
       skills: ["JavaScript", "React", "Node.js"],
       rating: 4.7,
+      accountAddress: "0x1234567890",
       editedProjects: [{ deadline: new Date() }],
       _count: { editedProjects: 7 }
     },
@@ -251,6 +257,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
       profilePicture: "https://randomuser.me/api/port",
       skills: ["TypeScript", "React", "Node.js"],
       rating: 4.3,
+      accountAddress: "0x1234567890",
       editedProjects: [{ deadline: new Date() }],
       _count: { editedProjects: 4 }
     }
@@ -620,7 +627,7 @@ const ProjectPage : React.FC<ProjectPageProps> = async ({ params }) => {
           <CardTitle>Editor Requests</CardTitle>
           <CardDescription>{requests.length} editor{requests.length > 1 ? "s" : ""} requested to edit this project</CardDescription>
         </CardHeader>
-        <EditRequests initialRequests={requests}/>
+        <EditRequests initialRequests={requests} projectId={id} deadline={deadline}/>
       </Card>}
     </>
   )

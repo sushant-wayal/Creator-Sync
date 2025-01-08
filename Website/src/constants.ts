@@ -1,3 +1,4 @@
+export const paymentContractAddress = "0x61129e6484979b1c0B407ec69D407ADe26338851";
 export const websiteName = "Creator Sync";
 export const domain = "http://localhost:3000";
 export const VERIFICATION_EMAIL = "verification";

@@ -148,6 +148,7 @@ export const getEditorsToRequest = async (projectId : string) => {
       profilePicture: true,
       skills: true,
       rating: true,
+      accountAddress: true,
       _count: {
         select: {
           editedProjects: {

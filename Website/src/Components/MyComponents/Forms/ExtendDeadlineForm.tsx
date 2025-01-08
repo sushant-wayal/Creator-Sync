@@ -2,10 +2,12 @@
 
 import { requestDeadlineExtension } from "@/actions/notification";
 import { extendDeadline } from "@/actions/project";
+import { getAddress } from "@/actions/user";
 import { Button } from "@/Components/ui/button";
 import { DialogFooter } from "@/Components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/Components/ui/form";
 import { Input } from "@/Components/ui/input";
+import { paymentExtendDeadline } from "@/helper/contract";
 import { ExtendDeadlineFormSchema } from "@/zodSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -27,7 +29,15 @@ export const ExtendDeadlineForm : React.FC<ExtendDeadlineFormProps> = ({ project
     const toastId = toast.loading(isCreator ? "Extending Deadline..." : "Requesting Deadline Extension...");
     try {
       const { days } = values;
-      if (isCreator) await extendDeadline(projectId, Number(days));
+      if (isCreator) {
+        const address = await getAddress();
+        if (!address) {
+          toast.error("Your account address is not connected", { id: toastId });
+          return;
+        }
+        await paymentExtendDeadline(projectId, Number(days));
+        await extendDeadline(projectId, Number(days));
+      }
       else await requestDeadlineExtension(projectId, Number(days));
       toast.success(isCreator ? "Deadline Extended" : "Requested Deadline Extension", { id: toastId });
       router.refresh();

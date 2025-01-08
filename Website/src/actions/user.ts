@@ -121,3 +121,31 @@ export const resetRefreshToken = async (id: string) => {
     }
   });
 }
+
+export const updateAccountAddress = async (address: string | null) => {
+  const session = await auth();
+  if (!session || !session.user || !session.user.id) {
+    throw new Error("User not authenticated");
+  }
+  await db.user.update({
+    where: {
+      id: session.user.id
+    },
+    data: {
+      accountAddress: address
+    }
+  });
+}
+
+export const getAddress = async () => {
+  const session = await auth();
+  if (!session || !session.user || !session.user.id) {
+    throw new Error("User not authenticated");
+  }
+  const user = await db.user.findUnique({
+    where: {
+      id: session.user.id
+    }
+  });
+  return user?.accountAddress;
+}
