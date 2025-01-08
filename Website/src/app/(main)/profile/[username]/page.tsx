@@ -1,4 +1,4 @@
-import { getUser } from "@/actions/user";
+import { getUser, resetRefreshToken } from "@/actions/user";
 import { auth } from "@/auth";
 import { ProfilePicture } from "@/Components/MyComponents/General/ProfilePicture";
 import { Badge } from "@/Components/ui/badge";
@@ -310,8 +310,12 @@ const ProfilePage : React.FC<ProfilePageProps> = async ({ params }) => {
   }
   let userChannelData;
   if (user.youtubeRefreshToken) {
-    const { data: { channelData } } = await axios.post(`${domain}/api/youtube/statistics`, { refreshToken: user.youtubeRefreshToken });
-    userChannelData = channelData;
+    const { data: { channelData, error } } = await axios.post(`${domain}/api/youtube/statistics`, { refreshToken: user.youtubeRefreshToken });
+    if (channelData) userChannelData = channelData;
+    else if (error) {
+      user.youtubeRefreshToken = null;
+      await resetRefreshToken(user.id);
+    }
   }
   const { title, subscribers, views, videos } = userChannelData || demoChannelData;
   // const { title, subscribers, views, videos } = demoChannelData;

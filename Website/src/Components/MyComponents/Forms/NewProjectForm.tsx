@@ -80,7 +80,7 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
   const onSubmit = async (values: z.infer<typeof NewProjectFormSchema>) => {
     const toastId = toast.loading("Creating Project...");
     try {
-      const { title, description, projectType, duration, deadline } = values;
+      const { title, description, projectType, duration, deadline, budget } = values;
       const projectId = await createProject({
               title,
               description,
@@ -90,6 +90,7 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
               fileName,
               duration : Number(duration),
               deadline,
+              budget: Number(budget),
               instructions: instructions.map(({ content, nature }) => ({ content, nature }))
             })
       toast.success("Project Created Successfully", { id: toastId });
@@ -280,6 +281,26 @@ export const NewProjectForm : React.FC<NewProjectFormProps>  = ({ initialEditors
                       />
                     </PopoverContent>
                   </Popover>
+                  <FormMessage/>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="budget"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Budget (USD)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter Estimated Project Budget"
+                      {...field}
+                      className="placeholder:text-[#444444]"
+                    />
+                  </FormControl>
                   <FormMessage/>
                 </FormItem>
               )}

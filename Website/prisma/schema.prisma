@@ -19,13 +19,23 @@ enum PaymentStatus {
   FAILED
 }
 
+enum PaymentType {
+  CREATE
+  EXTEND_DEADLINE
+  COMPLETE
+}
+
 model Payment {
   id          String        @id @default(cuid())
   amount      Float
-  currency    String
+  penalty     Float         @default(0)
+  currency    String        @default("SepoliaETH")
   status      PaymentStatus @default(PENDING)
+  type        PaymentType
   user        User          @relation(fields: [userId], references: [id])
   userId      String
+  project     Project       @relation(fields: [projectId], references: [id])
+  projectId   String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
@@ -57,6 +67,7 @@ model User {
   youtubeLink                   String?
   instagramLink                 String?
   xLink                         String?
+  accountAddress                String?
   skills                        String[]       @default([])
   readyToEdit                   Boolean        @default(false)
   requestEdit                   RequestEdit[]
@@ -153,6 +164,7 @@ model RequestEdit {
   project     Project  @relation(fields: [projectId], references: [id])
   editorId    String
   editor      User     @relation(fields: [editorId], references: [id])
+  budget      Float
   status      RequestStatus @default(PENDING)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -188,6 +200,7 @@ model Project {
   editorId     String?
   duration     Int
   deadline     DateTime
+  budget       Float
   completed    Boolean            @default(false)
   FileVersion  FileVersion[]      @relation("FileVersionRelation")
   ThumbnailVersion    ThumbnailVersion[] @relation("ThumbnailVersionRelation")
@@ -196,6 +209,7 @@ model Project {
   requestEditors RequestEditor[]
   notifications Notification[]     @relation("ProjectNotificationRelation")
   Chat         Chat[]         
+  payments     Payment[]
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 }

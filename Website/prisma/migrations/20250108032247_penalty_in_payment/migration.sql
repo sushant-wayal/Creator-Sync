@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Payment" ADD COLUMN     "penalty" DOUBLE PRECISION NOT NULL DEFAULT 0;

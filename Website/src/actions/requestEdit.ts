@@ -2,8 +2,9 @@
 
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
+import axios from "axios";
 
-export const requestEdit = async (projectId: string, notify : boolean = true) => {
+export const requestEdit = async (projectId: string, budget: number, notify : boolean = true) => {
   const session = await auth();
   if (!session || !session.user) {
     throw new Error("You need to be logged in to request an edit");
@@ -15,7 +16,8 @@ export const requestEdit = async (projectId: string, notify : boolean = true) =>
   await db.requestEdit.create({
     data: {
       projectId,
-      editorId: userId
+      editorId: userId,
+      budget,
     }
   })
   const project = await db.project.findUnique({
@@ -93,3 +95,15 @@ export const acceptEditRequest = async (requestEditId: string) => {
     }
   });
 };
+
+export const USDtoETH = async (USD: number) => {
+  const { data : { result : { ethusd } } } = await axios.get(`https://api.etherscan.io/api?module=stats&action=ethprice&apikey=${process.env.ETHERSCAN_API_KEY}`);
+  const answer = USD / ethusd;
+  return parseFloat(answer.toString()).toFixed(18);
+}
+
+export const ETHtoUSD = async (ETH: number) => {
+  const { data : { result : { ethusd } } } = await axios.get(`https://api.etherscan.io/api?module=stats&action=ethprice&apikey=${process.env.ETHERSCAN_API_KEY}`);
+  const answer = ETH * ethusd;
+  return parseFloat(answer.toString()).toFixed(2);
+}
