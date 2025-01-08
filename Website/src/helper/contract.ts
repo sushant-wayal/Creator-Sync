@@ -66,13 +66,34 @@ export const paymentComplete = async (projectId: string) => {
   const contract = await getContract();
   const tx = await contract.complete(projectId);
   await tx.wait();
+  // const receipt = await tx.wait();
+  // console.log('paymentComplete done', receipt);
+  // const logs = await contract.queryFilter(
+  //   "PaymentDone",
+  //   receipt.blockNumber,
+  //   receipt.blockNumber
+  // );
+  // console.log('logs', logs);
+  // logs.forEach((log) => {
+  //   const args = (log as ethers.EventLog).args;
+  //   if (args) {
+  //     console.log("Indexed Project ID:", args._projectId); // Indexed
+  //     console.log("Amount (USD):", args.amount.toString());
+  //     console.log("Refund (USD):", args.refund.toString());
+  //     console.log("Project ID:", args.projectId); // Non-indexed
+  //   }
+  // });
 }
 
 export const paymentDoneEventListener = async () => {
   console.log('paymentDoneEventListener');
   const contract = await getContract();
-  contract.on('PaymentDone', async (amount, refund, projectId, _event) => {
-    console.log('PaymentDone', amount, refund, projectId);
+  contract.on('PaymentDone', async (indexedProjectId, amount, refund, projectId, _event) => {
+    console.log('PaymentDone event');
+    console.log("Indexed Project ID:", indexedProjectId);
+    console.log("Amount (USD):", BigInt(amount).toString(), amount);
+    console.log("Refund (USD):", BigInt(refund).toString(), refund);
+    console.log("Project ID:", projectId);
     await createCompleteTypePayment(projectId, Number(amount), Number(refund));
   });
 }

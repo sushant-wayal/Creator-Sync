@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { PaymentStatus, PaymentType } from "@prisma/client";
+import { USDtoETH } from "./requestEdit";
 
 export const createPayment = async (projectId: string, budgetInEth: number, type: PaymentType, status: PaymentStatus = PaymentStatus.PENDING, penalty: number = 0) => {
   const session = await auth();
@@ -39,6 +40,8 @@ export const updateStatus = async (paymentId: string, status: PaymentStatus) => 
 
 export const createCompleteTypePayment = async (projectId: string, amount: number, refund: number) => {
   console.log("createCompleteTypePayment", projectId, amount, refund);
+  const amountInEth = await USDtoETH(amount);
+  const refundInEth = await USDtoETH(refund);
   const session = await auth();
   if (!session || !session.user || !session.user.id) {
     throw new Error("User not logged in");
@@ -66,8 +69,8 @@ export const createCompleteTypePayment = async (projectId: string, amount: numbe
     }
   });
   if (payment) return;
-  if (userId === creatorId && refund > 0) await createPayment(projectId, refund, PaymentType.COMPLETE, PaymentStatus.COMPLETED);
-  else if (userId === editorId && amount > 0) await createPayment(projectId, amount, PaymentType.COMPLETE, PaymentStatus.COMPLETED, refund);
+  if (userId === creatorId && refund > 0) await createPayment(projectId, Number(refundInEth), PaymentType.COMPLETE, PaymentStatus.COMPLETED);
+  else if (userId === editorId && amount > 0) await createPayment(projectId, Number(amountInEth), PaymentType.COMPLETE, PaymentStatus.COMPLETED, refund);
 }
 
 export const getPayments = async () => {
@@ -90,6 +93,9 @@ export const getPayments = async () => {
           accountAddress: true
         }
       }
+    },
+    orderBy: {
+      updatedAt: 'desc'
     }
   });
   return payments;

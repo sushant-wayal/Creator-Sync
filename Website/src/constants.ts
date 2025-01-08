@@ -1,4 +1,4 @@
-export const paymentContractAddress = "0x61129e6484979b1c0B407ec69D407ADe26338851";
+export const paymentContractAddress = "0xBe15F8BA0623bc276bA528E59102dB2183d11ba6";
 export const websiteName = "Creator Sync";
 export const domain = "http://localhost:3000";
 export const VERIFICATION_EMAIL = "verification";
@@ -173,18 +173,24 @@ export const paymentContractAbi = [
 		"inputs": [
 			{
 				"indexed": true,
+				"internalType": "string",
+				"name": "_projectId",
+				"type": "string"
+			},
+			{
+				"indexed": false,
 				"internalType": "uint256",
 				"name": "amount",
 				"type": "uint256"
 			},
 			{
-				"indexed": true,
+				"indexed": false,
 				"internalType": "uint256",
 				"name": "refund",
 				"type": "uint256"
 			},
 			{
-				"indexed": true,
+				"indexed": false,
 				"internalType": "string",
 				"name": "projectId",
 				"type": "string"

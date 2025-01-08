@@ -216,7 +216,7 @@ export const ConnectWalletButton : React.FC<ConnectWalletButtonProps> = ({ initi
       return;
     }
     paymentDoneEventListener();
-  }, [window.ethereum])
+  }, [])
 
   useEffect(() => {
     if (!window.ethereum) {
