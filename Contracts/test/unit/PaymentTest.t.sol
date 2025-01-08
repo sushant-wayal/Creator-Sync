@@ -11,7 +11,7 @@ import { AggregatorV3Interface } from "../../lib/chainlink/contracts/src/v0.8/sh
 contract PaymentTest is Test {
     using PriceConverter for uint256;
 
-    event PaymentDone(uint256 indexed amount, uint256 indexed refund, string indexed projectId);
+    event PaymentDone(string indexed _projectId, uint256 amount, uint256 refund, string projectId);
 
     Payment payment;
     AggregatorV3Interface priceFeed;
@@ -97,8 +97,8 @@ contract PaymentTest is Test {
         uint256 toPayInEth = toPayInUsd / oneEthtoUsd;
         uint256 toRefundInEth = penalty / oneEthtoUsd;
         vm.prank(SENDER);
-        vm.expectEmit(true, true, true, false, address(payment));
-        emit PaymentDone(toPayInUsd / PRECISION , penalty / PRECISION, PROJECT_ID);
+        vm.expectEmit(true, false, false, true, address(payment));
+        emit PaymentDone(PROJECT_ID, toPayInUsd / PRECISION , penalty / PRECISION, PROJECT_ID);
         payment.complete(PROJECT_ID);
         assertEq(address(SENDER).balance, STARTING_BALANCE - SEND_VALUE + toRefundInEth);
         assertEq(address(RECEIVER).balance, STARTING_BALANCE + toPayInEth);

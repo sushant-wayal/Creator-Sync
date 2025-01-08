@@ -20,7 +20,7 @@ contract Payment {
     error Payment__OnlyCreatorCanExtendDeadline();
     error Payment__PaymentFailed();
 
-    event PaymentDone(uint256 indexed amount, uint256 indexed refund, string indexed projectId);
+    event PaymentDone(string indexed _projectId, uint256 amount, uint256 refund, string projectId);
 
     AggregatorV3Interface internal immutable iPriceFeed;
     uint256 private constant ONE_ETH = 1 ether;
@@ -81,7 +81,7 @@ contract Payment {
         (success, ) = payment.creator.call{ value: toRefundInEth }("");
         if (!success) revert Payment__PaymentFailed();
         delete sPayments[projectId];
-        emit PaymentDone(toPayInUsd / PRECISION, penalty / PRECISION, projectId);
+        emit PaymentDone(projectId, toPayInUsd / PRECISION, penalty / PRECISION, projectId);
     }
 
 
