@@ -35,7 +35,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               username: username as string,
               email: email as string,
               dob: new Date(dob as string),
-              gender: gender as "MALE" || "FEMALE" || "OTHER",
+              gender: gender as "MALE" | "FEMALE" | "OTHER",
               password: hashedPassword,
               profilePicture: profilePicture as string,
             },
