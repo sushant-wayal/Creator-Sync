@@ -19,9 +19,8 @@ export const generateMetadata = async ({ params } : EditProfilePageProps) => {
   }
 };
 
-const EditProfilePage : React.FC<EditProfilePageProps> = async ({ params }) => {
-  const resolvedParams = await params;
-  const username = decodeURIComponent(resolvedParams.username);
+const EditProfilePage = async ({ params } : { params : {  username : string} }) => {
+  const username = decodeURIComponent(params.username);
   const session = await auth();
   if (!session || !session.user) {
     throw new Error("User not authenticated");
