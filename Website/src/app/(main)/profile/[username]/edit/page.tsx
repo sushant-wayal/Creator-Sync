@@ -11,7 +11,7 @@ interface EditProfilePageProps {
 }
 
 export const generateMetadata = async ({ params } : EditProfilePageProps) => {
-  const { username } = params;
+  const { username } = await params;
   return {
     title: `${username} | Edit Profile | ${websiteName}`,
     description: `Edit your profile information on Creator Sync`,
