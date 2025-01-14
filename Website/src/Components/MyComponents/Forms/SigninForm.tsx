@@ -214,10 +214,16 @@ export const SignInForm = () => {
         <button className="rounded-full" onClick={() => authSignin("google")}>
           <img src="../../../../authLogo/google.svg" alt="Google Logo" className="w-10 aspect-square rounded-full"/>
         </button>
-        <button className="rounded-full" onClick={() => authSignin("twitter")}>
+        <button className="rounded-full" onClick={() => {
+          if (process.env.NODE_ENV === "development") authSignin("twitter");
+          else if  (process.env.NODE_ENV === "production") toast.info("X Signin will be available soon")
+        }}>
           <img src="../../../../authLogo/x.svg" alt="X Logo" className="w-10 aspect-square rounded-full"/>
         </button>
-        <button className="rounded-full" onClick={() => authSignin("linkedin")}>
+        <button className="rounded-full" onClick={() => {
+          if (process.env.NODE_ENV === "development") authSignin("linkedin");
+          else if  (process.env.NODE_ENV === "production") toast.info("LinkedIn SIgnin will be available soon")
+        }}>
           <img src="../../../../authLogo/linkedin.svg" alt="LinkedIn Logo" className="w-10 aspect-square rounded-full"/>
         </button>
       </div>
