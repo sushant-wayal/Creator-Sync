@@ -1,6 +1,0 @@
-{
-  "/api/edgestore/[...edgestore]/route": "app/api/edgestore/[...edgestore]/route.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/page": "app/page.js",
-  "/(auth)/signin/page": "app/(auth)/signin/page.js"
-}
